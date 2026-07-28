@@ -1,8 +1,11 @@
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
+import { Request, Response, NextFunction } from 'express';
+import jwt, { Secret } from 'jsonwebtoken';
+import User from '../models/User';
+import { UserRole } from '../types';
 
-const generateToken = (id, role) => {
-  return jwt.sign({ id, role }, process.env.JWT_SECRET, {
+const generateToken = (id: string | object, role: UserRole): string => {
+  const secret: Secret = process.env.JWT_SECRET || 'fallback_secret';
+  return jwt.sign({ id, role }, secret, {
     expiresIn: '1d',
   });
 };
@@ -10,7 +13,7 @@ const generateToken = (id, role) => {
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
-const register = async (req, res, next) => {
+export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, email, password, role } = req.body;
 
@@ -23,8 +26,7 @@ const register = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'User already exists', data: null });
     }
 
-    // Determine role; limit what can be set if needed, but per spec, role is handled based on input or default
-    const userRole = role && ['requester', 'staff', 'manager'].includes(role) ? role : 'requester';
+    const userRole: UserRole = role && ['requester', 'staff', 'manager'].includes(role) ? (role as UserRole) : 'requester';
 
     const user = await User.create({
       name,
@@ -56,7 +58,7 @@ const register = async (req, res, next) => {
 // @desc    Auth user & get token
 // @route   POST /api/auth/login
 // @access  Public
-const login = async (req, res, next) => {
+export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
 
@@ -84,9 +86,4 @@ const login = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-};
-
-module.exports = {
-  register,
-  login,
 };

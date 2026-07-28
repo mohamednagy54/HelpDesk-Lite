@@ -1,24 +1,25 @@
-const Ticket = require('../models/Ticket');
+import { Request, Response, NextFunction } from 'express';
+import Ticket from '../models/Ticket';
+import { TicketCategory, TicketStatus } from '../types';
 
 // @desc    Create new ticket
 // @route   POST /api/tickets
 // @access  Private (Requester)
-const createTicket = async (req, res, next) => {
+export const createTicket = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { description, category } = req.body;
     if (!description || !category) {
       return res.status(400).json({ success: false, message: 'Please provide description and category', data: null });
     }
-    
-    // Validate category enum
+
     if (!['Hardware', 'Software', 'Access', 'Other'].includes(category)) {
       return res.status(400).json({ success: false, message: 'Invalid category', data: null });
     }
 
     const ticket = await Ticket.create({
-      requester: req.user._id,
+      requester: req.user!._id,
       description,
-      category,
+      category: category as TicketCategory,
       status: 'New',
     });
 
@@ -31,9 +32,9 @@ const createTicket = async (req, res, next) => {
 // @desc    Get user's tickets
 // @route   GET /api/tickets/mine
 // @access  Private (Requester)
-const getMyTickets = async (req, res, next) => {
+export const getMyTickets = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const tickets = await Ticket.find({ requester: req.user._id }).populate('owner', 'name email');
+    const tickets = await Ticket.find({ requester: req.user!._id }).populate('owner', 'name email');
     res.json({ success: true, message: 'Tickets fetched', data: tickets });
   } catch (error) {
     next(error);
@@ -43,16 +44,15 @@ const getMyTickets = async (req, res, next) => {
 // @desc    Get single ticket
 // @route   GET /api/tickets/:id
 // @access  Private (Requester (own), Staff, Manager)
-const getTicket = async (req, res, next) => {
+export const getTicket = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const ticket = await Ticket.findById(req.params.id).populate('requester', 'name email').populate('owner', 'name email');
-    
+
     if (!ticket) {
       return res.status(404).json({ success: false, message: 'Ticket not found', data: null });
     }
 
-    // Access control: if role is requester, must be their own ticket
-    if (req.user.role === 'requester' && ticket.requester._id.toString() !== req.user._id.toString()) {
+    if (req.user!.role === 'requester' && ticket.requester._id.toString() !== req.user!._id.toString()) {
       return res.status(403).json({ success: false, message: 'Not authorized to view this ticket', data: null });
     }
 
@@ -65,14 +65,14 @@ const getTicket = async (req, res, next) => {
 // @desc    Assign ticket to staff
 // @route   PATCH /api/tickets/:id/assign
 // @access  Private (Staff)
-const assignTicket = async (req, res, next) => {
+export const assignTicket = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const ticket = await Ticket.findById(req.params.id);
     if (!ticket) {
       return res.status(404).json({ success: false, message: 'Ticket not found', data: null });
     }
 
-    const { ownerId } = req.body; // Can be self or another staff id
+    const { ownerId } = req.body;
     if (!ownerId) {
       return res.status(400).json({ success: false, message: 'Please provide ownerId', data: null });
     }
@@ -90,7 +90,7 @@ const assignTicket = async (req, res, next) => {
 // @desc    Update ticket status
 // @route   PATCH /api/tickets/:id/status
 // @access  Private (Staff -> Resolved, Manager -> Closed)
-const updateTicketStatus = async (req, res, next) => {
+export const updateTicketStatus = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { status } = req.body;
     if (!status) {
@@ -103,29 +103,27 @@ const updateTicketStatus = async (req, res, next) => {
     }
 
     const currentStatus = ticket.status;
-    const flow = ['New', 'In Progress', 'Resolved', 'Closed'];
+    const flow: TicketStatus[] = ['New', 'In Progress', 'Resolved', 'Closed'];
     const currentIndex = flow.indexOf(currentStatus);
-    const newIndex = flow.indexOf(status);
+    const newIndex = flow.indexOf(status as TicketStatus);
 
     if (newIndex === -1) {
       return res.status(400).json({ success: false, message: 'Invalid status', data: null });
     }
 
-    // Enforce linear, forward-only flow
     if (newIndex !== currentIndex + 1) {
       return res.status(400).json({ success: false, message: `Cannot transition from ${currentStatus} to ${status}. Tickets must follow the linear flow: New -> In Progress -> Resolved -> Closed`, data: null });
     }
 
-    // Role restrictions: 
-    if (status === 'Resolved' && req.user.role !== 'staff') {
+    if (status === 'Resolved' && req.user!.role !== 'staff') {
       return res.status(403).json({ success: false, message: 'Only staff can resolve tickets', data: null });
     }
-    
-    if (status === 'Closed' && req.user.role !== 'manager') {
+
+    if (status === 'Closed' && req.user!.role !== 'manager') {
       return res.status(403).json({ success: false, message: 'Only managers can close tickets', data: null });
     }
 
-    ticket.status = status;
+    ticket.status = status as TicketStatus;
     await ticket.save();
 
     res.json({ success: true, message: 'Ticket status updated', data: ticket });
@@ -137,10 +135,10 @@ const updateTicketStatus = async (req, res, next) => {
 // @desc    Get all tickets
 // @route   GET /api/tickets
 // @access  Private (Staff, Manager)
-const getTickets = async (req, res, next) => {
+export const getTickets = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { status } = req.query;
-    const query = {};
+    const query: Record<string, any> = {};
     if (status) {
       query.status = status;
     }
@@ -154,28 +152,27 @@ const getTickets = async (req, res, next) => {
 // @desc    Get ticket summary
 // @route   GET /api/tickets/summary
 // @access  Private (Manager)
-const getTicketSummary = async (req, res, next) => {
+export const getTicketSummary = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const summary = await Ticket.aggregate([
       {
         $group: {
           _id: '$status',
-          count: { $sum: 1 }
-        }
-      }
+          count: { $sum: 1 },
+        },
+      },
     ]);
-    
-    // Format response nicely
-    const formattedSummary = {
+
+    const formattedSummary: Record<string, number> = {
       New: 0,
       'In Progress': 0,
       Resolved: 0,
-      Closed: 0
+      Closed: 0,
     };
-    
-    summary.forEach(item => {
-      if(formattedSummary[item._id] !== undefined) {
-         formattedSummary[item._id] = item.count;
+
+    summary.forEach((item: { _id: string; count: number }) => {
+      if (formattedSummary[item._id] !== undefined) {
+        formattedSummary[item._id] = item.count;
       }
     });
 
@@ -183,14 +180,4 @@ const getTicketSummary = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-};
-
-module.exports = {
-  createTicket,
-  getMyTickets,
-  getTicket,
-  assignTicket,
-  updateTicketStatus,
-  getTickets,
-  getTicketSummary,
 };
