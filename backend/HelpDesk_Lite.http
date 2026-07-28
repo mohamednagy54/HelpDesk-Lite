@@ -1,0 +1,175 @@
+@baseUrl = http://localhost:5000/api
+# Replace with actual tokens after login
+@requesterToken = your_requester_token_here
+@staffToken = your_staff_token_here
+@managerToken = your_manager_token_here
+@ticketId = your_ticket_id_here
+@staffId = your_staff_id_here
+
+### --- 1. POST /api/auth/register ---
+
+### Success: Register Requester
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Alice Requester",
+  "email": "alice@example.com",
+  "password": "password123",
+  "role": "requester"
+}
+
+### Failure: Missing fields
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "bob@example.com"
+}
+
+
+### --- 2. POST /api/auth/login ---
+
+### Success: Login Requester
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "alice@example.com",
+  "password": "password123"
+}
+
+### Failure: Invalid credentials
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "alice@example.com",
+  "password": "wrongpassword"
+}
+
+
+### --- 3. POST /api/tickets ---
+
+### Success: Create Ticket
+POST {{baseUrl}}/tickets
+Authorization: Bearer {{requesterToken}}
+Content-Type: application/json
+
+{
+  "description": "My laptop won't turn on",
+  "category": "Hardware"
+}
+
+### Failure: Missing category
+POST {{baseUrl}}/tickets
+Authorization: Bearer {{requesterToken}}
+Content-Type: application/json
+
+{
+  "description": "My laptop won't turn on"
+}
+
+### Failure: No Token
+POST {{baseUrl}}/tickets
+Content-Type: application/json
+
+{
+  "description": "My laptop won't turn on",
+  "category": "Hardware"
+}
+
+
+### --- 4. GET /api/tickets/mine ---
+
+### Success: Get own tickets
+GET {{baseUrl}}/tickets/mine
+Authorization: Bearer {{requesterToken}}
+
+### Failure: Invalid Token
+GET {{baseUrl}}/tickets/mine
+Authorization: Bearer invalid_token
+
+
+### --- 5. GET /api/tickets/:id ---
+
+### Success: Get Ticket Detail
+GET {{baseUrl}}/tickets/{{ticketId}}
+Authorization: Bearer {{requesterToken}}
+
+### Failure: Wrong Ticket ID Format
+GET {{baseUrl}}/tickets/invalid_id
+Authorization: Bearer {{requesterToken}}
+
+
+### --- 6. PATCH /api/tickets/:id/assign ---
+
+### Success: Assign Ticket (Staff only)
+PATCH {{baseUrl}}/tickets/{{ticketId}}/assign
+Authorization: Bearer {{staffToken}}
+Content-Type: application/json
+
+{
+  "ownerId": "{{staffId}}"
+}
+
+### Failure: Requester trying to assign ticket (Role check)
+PATCH {{baseUrl}}/tickets/{{ticketId}}/assign
+Authorization: Bearer {{requesterToken}}
+Content-Type: application/json
+
+{
+  "ownerId": "{{staffId}}"
+}
+
+
+### --- 7. PATCH /api/tickets/:id/status ---
+
+### Success: Staff transitions ticket to In Progress
+PATCH {{baseUrl}}/tickets/{{ticketId}}/status
+Authorization: Bearer {{staffToken}}
+Content-Type: application/json
+
+{
+  "status": "In Progress"
+}
+
+### Failure: Invalid Transition (Skipping to Closed)
+PATCH {{baseUrl}}/tickets/{{ticketId}}/status
+Authorization: Bearer {{staffToken}}
+Content-Type: application/json
+
+{
+  "status": "Closed"
+}
+
+### Failure: Staff trying to close (Manager only)
+PATCH {{baseUrl}}/tickets/{{ticketId}}/status
+Authorization: Bearer {{staffToken}}
+Content-Type: application/json
+
+{
+  "status": "Closed"
+}
+
+
+### --- 8. GET /api/tickets ---
+
+### Success: Get all tickets (Manager/Staff)
+GET {{baseUrl}}/tickets
+Authorization: Bearer {{staffToken}}
+
+### Failure: Requester trying to view all tickets
+GET {{baseUrl}}/tickets
+Authorization: Bearer {{requesterToken}}
+
+
+### --- 9. GET /api/tickets/summary ---
+
+### Success: Get summary (Manager only)
+GET {{baseUrl}}/tickets/summary
+Authorization: Bearer {{managerToken}}
+
+### Failure: Staff trying to view summary
+GET {{baseUrl}}/tickets/summary
+Authorization: Bearer {{staffToken}}
