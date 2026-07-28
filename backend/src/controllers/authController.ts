@@ -18,12 +18,12 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     const { name, email, password, role } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({ success: false, message: 'Please provide name, email, and password', data: null });
+      return res.status(400).json({ success: false, message: 'Please provide name, email, and password', errors: [] });
     }
 
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({ success: false, message: 'User already exists', data: null });
+      return res.status(400).json({ success: false, message: 'User already exists', errors: [] });
     }
 
     const userRole: UserRole = role && ['requester', 'staff', 'manager'].includes(role) ? (role as UserRole) : 'requester';
@@ -48,7 +48,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         },
       });
     } else {
-      res.status(400).json({ success: false, message: 'Invalid user data', data: null });
+      res.status(400).json({ success: false, message: 'Invalid user data', errors: [] });
     }
   } catch (error) {
     next(error);
@@ -63,7 +63,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ success: false, message: 'Please provide email and password', data: null });
+      return res.status(400).json({ success: false, message: 'Please provide email and password', errors: [] });
     }
 
     const user = await User.findOne({ email });
@@ -81,7 +81,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         },
       });
     } else {
-      res.status(401).json({ success: false, message: 'Invalid email or password', data: null });
+      res.status(401).json({ success: false, message: 'Invalid email or password', errors: [] });
     }
   } catch (error) {
     next(error);
