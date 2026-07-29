@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { getAllTickets } from '@/api/tickets';
-import { StatusFilter, TicketStatusFilter } from '@/components/ui/StatusFilter';
+import { StatusFilter, type TicketStatusFilter } from '@/components/ui/StatusFilter';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';

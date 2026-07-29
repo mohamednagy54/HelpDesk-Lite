@@ -4,11 +4,11 @@ import { MainLayout } from '../layouts/MainLayout';
 import { ErrorPage } from '@/pages/ErrorPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { useAuthStore } from '@/features/auth/store/auth.store';
-import Login from '@/pages/Login';
+import { LoginPage } from '@/features/auth/pages/LoginPage';
 import Register from '@/pages/Register';
-import MyRequestsPage from '@/pages/MyRequestsPage';
-import NewTicketPage from '@/pages/NewTicketPage';
-import TicketDetailsPage from '@/pages/TicketDetailsPage';
+import { MyRequestsPage } from '@/pages/MyRequestsPage';
+import { NewTicketPage } from '@/pages/NewTicketPage';
+import { TicketDetailsPage } from '@/pages/TicketDetailsPage';
 import { StaffTickets } from '@/pages/StaffTickets';
 import { ManagerQueue } from '@/pages/ManagerQueue';
 
@@ -46,14 +46,14 @@ const router = createBrowserRouter([
     element: <MainLayout />,
     errorElement: <ErrorPage />,
     children: [
-      { path: 'login',    element: <Login /> },
+      { path: 'login',    element: <LoginPage /> },
       { path: 'register', element: <Register /> },
       {
         element: <RequireAuth />,
         children: [
           { index: true, element: <RootRedirect /> },
 
-          // Requester + staff can see their own requests
+          // Requester + staff + manager can see their own requests & details
           {
             element: <RequireRole allowedRoles={['requester', 'staff', 'manager']} />,
             children: [
@@ -62,9 +62,9 @@ const router = createBrowserRouter([
             ],
           },
 
-          // Only requesters can open new tickets
+          // Requesters & Staff can open new tickets
           {
-            element: <RequireRole allowedRoles={['requester']} />,
+            element: <RequireRole allowedRoles={['requester', 'staff', 'manager']} />,
             children: [
               { path: 'new-ticket', element: <NewTicketPage /> },
             ],
