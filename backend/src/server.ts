@@ -14,16 +14,18 @@ connectDB();
 
 const app = express();
 
-// Enable CORS
+// Enable CORS with credentials for cookie-based auth
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  origin: process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',')
+    : ['http://localhost:5173', 'http://localhost:5174'],
   credentials: true,
 }));
 
 // Body parser middleware
 app.use(express.json());
-app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 // Routes
 app.use('/api/auth', authRoutes);

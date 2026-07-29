@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt, { Secret } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import User from '../models/User';
 import { UserRole } from '../types';
 
@@ -12,15 +12,11 @@ const getRefreshSecret = (): string => {
 };
 
 const generateAccessToken = (id: string | object, role: UserRole): string => {
-  return jwt.sign({ id, role }, getJwtSecret(), {
-    expiresIn: '7d', // 7 days for development ease
-  });
+  return jwt.sign({ id, role }, getJwtSecret(), { expiresIn: '7d' });
 };
 
 const generateRefreshToken = (id: string | object, role: UserRole): string => {
-  return jwt.sign({ id, role }, getRefreshSecret(), {
-    expiresIn: '7d',
-  });
+  return jwt.sign({ id, role }, getRefreshSecret(), { expiresIn: '7d' });
 };
 
 const sendTokenResponse = (user: any, statusCode: number, res: Response, message: string) => {
@@ -28,7 +24,7 @@ const sendTokenResponse = (user: any, statusCode: number, res: Response, message
   const refreshToken = generateRefreshToken(user._id, user.role);
 
   const cookieOptions = {
-    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: (process.env.NODE_ENV === 'production' ? 'strict' : 'lax') as 'strict' | 'lax',
@@ -46,7 +42,7 @@ const sendTokenResponse = (user: any, statusCode: number, res: Response, message
         name: user.name,
         email: user.email,
         role: user.role,
-        accessToken,
+        accessToken, // Also sent in body for in-memory auth store
       },
     });
 };
@@ -67,14 +63,11 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       return res.status(400).json({ success: false, message: 'User already exists', errors: [] });
     }
 
-    const userRole: UserRole = role && ['requester', 'staff', 'manager'].includes(role) ? (role as UserRole) : 'requester';
+    const userRole: UserRole = role && ['requester', 'staff', 'manager'].includes(role)
+      ? (role as UserRole)
+      : 'requester';
 
-    const user = await User.create({
-      name,
-      email,
-      password,
-      role: userRole,
-    });
+    const user = await User.create({ name, email, password, role: userRole });
 
     if (user) {
       sendTokenResponse(user, 201, res, 'User registered successfully');
@@ -109,12 +102,12 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
-// @desc    Refresh access token / restore session via cookie
+// @desc    Refresh access token via cookie
 // @route   POST /api/auth/refresh
 // @access  Public
 export const refresh = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token = req.cookies.refreshToken || req.cookies.accessToken;
+    const token = req.cookies?.refreshToken || req.cookies?.accessToken;
 
     if (!token) {
       return res.status(401).json({ success: false, message: 'Not authorized, no token cookie', data: null });
@@ -124,18 +117,17 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
       let decoded: any;
       try {
         decoded = jwt.verify(token, getRefreshSecret());
-      } catch (err) {
+      } catch {
         decoded = jwt.verify(token, getJwtSecret());
       }
 
       const user = await User.findById(decoded.id).select('-password');
-
       if (!user) {
         return res.status(401).json({ success: false, message: 'Not authorized, user not found', data: null });
       }
 
       sendTokenResponse(user, 200, res, 'Token refreshed successfully');
-    } catch (error) {
+    } catch {
       res.status(401).json({ success: false, message: 'Not authorized, invalid token cookie', data: null });
     }
   } catch (error) {
@@ -157,11 +149,7 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
     res.clearCookie('accessToken', clearOptions);
     res.clearCookie('refreshToken', clearOptions);
 
-    res.status(200).json({
-      success: true,
-      message: 'User logged out successfully',
-      data: null,
-    });
+    res.status(200).json({ success: true, message: 'User logged out successfully', data: null });
   } catch (error) {
     next(error);
   }

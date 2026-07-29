@@ -3,6 +3,7 @@ import { UserRole } from '../types';
 
 export const roleCheck = (...roles: UserRole[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
+    // Case-insensitive comparison for robustness
     const userRole = req.user?.role?.toLowerCase();
     const allowedRoles = roles.map((r) => r.toLowerCase());
 

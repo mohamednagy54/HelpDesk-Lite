@@ -10,11 +10,12 @@ export interface UserRef {
 
 export interface Ticket {
   _id: string;
+  id?: string; // some API shapes may include this
   category: TicketCategory;
   description: string;
   status: TicketStatus;
-  requester: UserRef;
-  owner?: UserRef | null;
+  requester: UserRef | string;
+  owner?: UserRef | string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -31,3 +32,13 @@ export interface UpdateStatusInput {
 export interface AssignOwnerInput {
   ownerId: string;
 }
+
+export interface TicketSummary {
+  new: number;
+  inProgress: number;
+  resolved: number;
+  closed: number;
+}
+
+// Legacy alias
+export type TicketStatusType = TicketStatus;

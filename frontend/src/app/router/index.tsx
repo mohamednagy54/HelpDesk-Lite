@@ -1,18 +1,18 @@
 import React from 'react';
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { MainLayout } from '../layouts/MainLayout';
-import { ProtectedRoute } from '@/routes/ProtectedRoute';
 import { ErrorPage } from '@/pages/ErrorPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
-import Login from '@/pages/Login';
-import Register from '@/pages/Register';
-import MyRequestsPage from '@/pages/MyRequestsPage';
-import NewTicketPage from '@/pages/NewTicketPage';
-import TicketDetailsPage from '@/pages/TicketDetailsPage';
-import { StaffQueuePage } from '@/pages/StaffQueuePage';
-import { ManagerQueuePage } from '@/pages/ManagerQueuePage';
 import { useAuthStore } from '@/features/auth/store/auth.store';
+import { LoginPage } from '@/features/auth/pages/LoginPage';
+import Register from '@/pages/Register';
+import { MyRequestsPage } from '@/pages/MyRequestsPage';
+import { NewTicketPage } from '@/pages/NewTicketPage';
+import { TicketDetailsPage } from '@/pages/TicketDetailsPage';
+import { StaffTickets } from '@/pages/StaffTickets';
+import { ManagerQueue } from '@/pages/ManagerQueue';
 
+// --- Root redirect based on role ---
 const RootRedirect = () => {
   const user = useAuthStore((state) => state.user);
   if (!user) return <Navigate to="/login" replace />;
@@ -21,79 +21,69 @@ const RootRedirect = () => {
   return <Navigate to="/my-requests" replace />;
 };
 
+// --- Auth guard ---
+const RequireAuth = () => {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const location = useLocation();
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+  return <Outlet />;
+};
+
+// --- Role guard ---
+const RequireRole = ({ allowedRoles }: { allowedRoles: string[] }) => {
+  const user = useAuthStore((state) => state.user);
+  if (!user || !allowedRoles.includes(user.role)) {
+    return <Navigate to="/" replace />;
+  }
+  return <Outlet />;
+};
+
 const router = createBrowserRouter([
   {
     path: '/',
     element: <MainLayout />,
     errorElement: <ErrorPage />,
     children: [
+      { path: 'login',    element: <LoginPage /> },
+      { path: 'register', element: <Register /> },
       {
-        path: 'login',
-        element: <Login />,
-      },
-      {
-        path: 'register',
-        element: <Register />,
-      },
-      {
-        path: '/',
-        element: <ProtectedRoute />,
+        element: <RequireAuth />,
         children: [
+          { index: true, element: <RootRedirect /> },
+
           {
-            index: true,
-            element: <RootRedirect />,
+            element: <RequireRole allowedRoles={['requester', 'staff', 'manager']} />,
+            children: [
+              { path: 'my-requests', element: <MyRequestsPage /> },
+              { path: 'tickets/:id', element: <TicketDetailsPage /> },
+              { path: 'new-ticket',  element: <NewTicketPage /> },
+            ],
           },
+
           {
-            path: 'my-requests',
-            element: (
-              <ProtectedRoute allowedRoles={['requester', 'staff', 'manager']}>
-                <MyRequestsPage />
-              </ProtectedRoute>
-            ),
+            element: <RequireRole allowedRoles={['staff', 'manager']} />,
+            children: [
+              { path: 'staff/tickets', element: <StaffTickets /> },
+            ],
           },
+
           {
-            path: 'new-ticket',
-            element: (
-              <ProtectedRoute allowedRoles={['requester', 'staff', 'manager']}>
-                <NewTicketPage />
-              </ProtectedRoute>
-            ),
-          },
-          {
-            path: 'tickets/:id',
-            element: <TicketDetailsPage />,
-          },
-          {
-            path: 'staff/tickets',
-            element: (
-              <ProtectedRoute allowedRoles={['staff', 'manager']}>
-                <StaffQueuePage />
-              </ProtectedRoute>
-            ),
-          },
-          {
-            path: 'manager/queue',
-            element: (
-              <ProtectedRoute allowedRoles={['manager']}>
-                <ManagerQueuePage />
-              </ProtectedRoute>
-            ),
+            element: <RequireRole allowedRoles={['manager']} />,
+            children: [
+              { path: 'manager/queue', element: <ManagerQueue /> },
+            ],
           },
         ],
       },
-      {
-        path: '*',
-        element: <NotFoundPage />,
-      },
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ]);
 
 export const AppRouter = () => {
   return (
-    <RouterProvider
-      router={router}
-      future={{ v7_startTransition: true }}
-    />
+    <RouterProvider router={router} future={{ v7_startTransition: true }} />
   );
 };
