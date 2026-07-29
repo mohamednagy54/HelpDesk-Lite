@@ -156,7 +156,7 @@ export const StaffQueuePage: React.FC = () => {
                     <tr
                       key={ticket._id || ticket.id}
                       className="hover:bg-slate-800/40 transition-colors group animate-fade-in-up"
-                      style={{ animationDelay: `${Math.min(index, 5) * 30}ms`, opacity: 0 }}
+                      style={{ animationDelay: `${Math.min(index, 5) * 30}ms` }}
                     >
                       <td className="px-6 py-4 font-mono text-xs font-semibold text-indigo-400">
                         {ticketIdDisplay}

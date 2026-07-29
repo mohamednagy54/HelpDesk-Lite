@@ -123,10 +123,14 @@ export const ManagerQueue: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
-                  {sortedTickets.map((ticket) => {
+                  {sortedTickets.map((ticket, index) => {
                     const ticketId = getTicketId(ticket);
                     return (
-                      <tr key={ticketId} className="transition-colors hover:bg-slate-800/40">
+                      <tr
+                        key={ticketId}
+                        className="transition-colors hover:bg-slate-800/40 animate-fade-in-up"
+                        style={{ animationDelay: `${Math.min(index, 5) * 30}ms` }}
+                      >
                         <td className="p-4 align-middle font-mono text-xs font-semibold text-indigo-400">
                           #{ticketId.slice(-6).toUpperCase()}
                         </td>
