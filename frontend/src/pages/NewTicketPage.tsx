@@ -4,7 +4,8 @@ import { ticketsApi } from '@/features/tickets/api/tickets.api';
 import type { TicketCategory, Ticket } from '@/types/ticket';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Loader2, ArrowLeft, Send, CheckCircle2, PlusCircle, ListFilter } from 'lucide-react';
+import { ArrowLeft, Send, PlusCircle, ListFilter } from 'lucide-react';
+import { Loader } from '@/components/ui/Loader';
 
 const CATEGORIES: TicketCategory[] = ['Access', 'Software', 'Hardware', 'Other'];
 
@@ -74,7 +75,18 @@ export const NewTicketPage: React.FC = () => {
       {createdTicket ? (
         <Card className="text-center py-10 px-6 space-y-6 border-emerald-500/30 bg-emerald-950/10 animate-fadeIn">
           <div className="flex justify-center">
-            <CheckCircle2 className="w-14 h-14 text-emerald-400" />
+            <svg 
+              className="w-14 h-14 text-emerald-400" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" className="animate-svg-draw" style={{ strokeDasharray: 100 }} />
+              <path d="M9 12l2 2 4-4" className="animate-svg-draw" style={{ strokeDasharray: 100, animationDelay: '0.2s' }} />
+            </svg>
           </div>
 
           <div className="space-y-2">
@@ -200,7 +212,7 @@ export const NewTicketPage: React.FC = () => {
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader size="sm" />
                     <span>Submitting Request...</span>
                   </>
                 ) : (

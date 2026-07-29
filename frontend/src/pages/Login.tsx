@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
 
 import { useAuthStore } from '../features/auth/store/auth.store';
 import { authApi } from '../features/auth/api/auth.api';
@@ -10,6 +9,7 @@ import { loginSchema, type LoginInput } from '../schemas/auth.schema';
 import { AuthCard } from '../components/auth/AuthCard';
 import { PasswordInput } from '../components/auth/PasswordInput';
 import { FormError } from '../components/auth/FormError';
+import { Loader } from '../components/ui/Loader';
 
 export const Login: React.FC = () => {
   const { user, isAuthenticated, setUser } = useAuthStore();
@@ -143,7 +143,7 @@ export const Login: React.FC = () => {
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin text-white" />
+              <Loader size="sm" className="text-white" />
               <span>Logging in...</span>
             </>
           ) : (
@@ -159,6 +159,34 @@ export const Login: React.FC = () => {
               Register
             </Link>
           </p>
+        </div>
+
+        {/* Testing Credentials Box */}
+        <div className="mt-6 p-4 rounded-lg bg-slate-900/80 border border-slate-700/60 shadow-inner">
+          <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3 border-b border-slate-800 pb-2">Testing Credentials</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center text-xs">
+              <div>
+                <span className="block text-purple-400 font-medium">Manager</span>
+                <span className="text-slate-400">admin@test.com</span>
+              </div>
+              <span className="font-mono text-slate-500 bg-slate-950/50 border border-slate-800 px-2 py-1 rounded">Aa123456</span>
+            </div>
+            <div className="flex justify-between items-center text-xs">
+              <div>
+                <span className="block text-indigo-400 font-medium">Staff</span>
+                <span className="text-slate-400">staff@test.com</span>
+              </div>
+              <span className="font-mono text-slate-500 bg-slate-950/50 border border-slate-800 px-2 py-1 rounded">Aa123456</span>
+            </div>
+            <div className="flex justify-between items-center text-xs">
+              <div>
+                <span className="block text-emerald-400 font-medium">Requester</span>
+                <span className="text-slate-400">team@test.com</span>
+              </div>
+              <span className="font-mono text-slate-500 bg-slate-950/50 border border-slate-800 px-2 py-1 rounded">Aa123456</span>
+            </div>
+          </div>
         </div>
       </form>
     </AuthCard>

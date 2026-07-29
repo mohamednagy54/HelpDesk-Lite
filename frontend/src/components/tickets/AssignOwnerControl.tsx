@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import type { UserRef } from '@/types/ticket';
 import { useAuthStore } from '@/features/auth/store/auth.store';
-import { Loader2, UserPlus, Check } from 'lucide-react';
+import { UserPlus, Check } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { Loader } from '@/components/ui/Loader';
 
 interface AssignOwnerControlProps {
   currentOwner?: UserRef | null;
@@ -56,7 +57,7 @@ export const AssignOwnerControl: React.FC<AssignOwnerControlProps> = ({
           >
             {isUpdating ? (
               <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <Loader size="sm" />
                 Assigning...
               </>
             ) : (

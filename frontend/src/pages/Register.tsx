@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
 
 import { useAuthStore } from '../features/auth/store/auth.store';
 import { authApi } from '../features/auth/api/auth.api';
@@ -10,6 +9,7 @@ import { registerSchema, type RegisterInput } from '../schemas/auth.schema';
 import { AuthCard } from '../components/auth/AuthCard';
 import { PasswordInput } from '../components/auth/PasswordInput';
 import { FormError } from '../components/auth/FormError';
+import { Loader } from '../components/ui/Loader';
 
 export const Register: React.FC = () => {
   const { user, isAuthenticated, setUser } = useAuthStore();
@@ -201,7 +201,7 @@ export const Register: React.FC = () => {
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin text-white" />
+              <Loader size="sm" className="text-white" />
               <span>Creating Account...</span>
             </>
           ) : (

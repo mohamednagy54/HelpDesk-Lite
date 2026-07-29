@@ -140,10 +140,11 @@ export const MyRequestsPage: React.FC = () => {
                       </td>
                     </tr>
                   ) : (
-                    filteredTickets.map((ticket) => (
+                    filteredTickets.map((ticket, index) => (
                       <tr
                         key={ticket._id}
-                        className="hover:bg-slate-800/40 transition-colors group"
+                        className="hover:bg-slate-800/40 transition-colors group animate-fade-in-up"
+                        style={{ animationDelay: `${Math.min(index, 5) * 30}ms`, opacity: 0 }}
                       >
                         <td className="py-3.5 px-4 font-mono text-xs font-medium text-slate-400 group-hover:text-indigo-400">
                           #{ticket._id.slice(-6).toUpperCase()}

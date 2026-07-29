@@ -133,7 +133,7 @@ export const StaffQueuePage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
-                {filteredTickets.map((ticket) => {
+                {filteredTickets.map((ticket, index) => {
                   const ticketIdDisplay = ticket._id
                     ? `#${ticket._id.slice(-6).toUpperCase()}`
                     : ticket.id
@@ -155,7 +155,8 @@ export const StaffQueuePage: React.FC = () => {
                   return (
                     <tr
                       key={ticket._id || ticket.id}
-                      className="hover:bg-slate-800/40 transition-colors group"
+                      className="hover:bg-slate-800/40 transition-colors group animate-fade-in-up"
+                      style={{ animationDelay: `${Math.min(index, 5) * 30}ms`, opacity: 0 }}
                     >
                       <td className="px-6 py-4 font-mono text-xs font-semibold text-indigo-400">
                         {ticketIdDisplay}

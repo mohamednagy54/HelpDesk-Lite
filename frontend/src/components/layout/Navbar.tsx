@@ -109,10 +109,14 @@ export const Navbar: React.FC = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={handleLogout}
-              className="text-xs text-slate-300 border-slate-700 hover:bg-slate-800 hover:text-red-400 gap-1.5"
+              onClick={async () => {
+                const btn = document.getElementById('logout-icon');
+                if (btn) btn.classList.add('animate-spin');
+                await handleLogout();
+              }}
+              className="text-xs text-slate-300 border-slate-700 hover:bg-slate-800 hover:text-red-400 gap-1.5 disabled:opacity-50"
             >
-              <LogOut className="w-3.5 h-3.5" />
+              <LogOut id="logout-icon" className="w-3.5 h-3.5" />
               <span>Logout</span>
             </Button>
           </div>

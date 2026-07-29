@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import type { TicketStatus } from '@/types/ticket';
 import { useAuthStore } from '@/features/auth/store/auth.store';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { Loader } from '@/components/ui/Loader';
 
 interface StatusChangeControlProps {
   currentStatus: TicketStatus;
@@ -75,7 +76,7 @@ export const StatusChangeControl: React.FC<StatusChangeControlProps> = ({
         >
           {isUpdating ? (
             <>
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <Loader size="sm" className="text-white" />
               Updating...
             </>
           ) : (

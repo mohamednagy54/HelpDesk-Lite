@@ -44,7 +44,14 @@ export const getMyTickets = async (req: Request, res: Response, next: NextFuncti
     if (status) {
       query.status = status;
     }
-    const tickets = await Ticket.find(query).populate('owner', 'name email');
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const limit = parseInt(req.query.limit as string, 10) || 50;
+    const skip = (page - 1) * limit;
+
+    const tickets = await Ticket.find(query)
+      .skip(skip)
+      .limit(limit)
+      .populate('owner', 'name email');
     res.json({ success: true, message: 'Tickets fetched', data: tickets });
   } catch (error) {
     next(error);
@@ -156,7 +163,15 @@ export const getTickets = async (req: Request, res: Response, next: NextFunction
     if (open === 'true') {
       query.status = { $ne: 'Closed' };
     }
-    const tickets = await Ticket.find(query).populate('requester', 'name email').populate('owner', 'name email');
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const limit = parseInt(req.query.limit as string, 10) || 50;
+    const skip = (page - 1) * limit;
+
+    const tickets = await Ticket.find(query)
+      .skip(skip)
+      .limit(limit)
+      .populate('requester', 'name email')
+      .populate('owner', 'name email');
     res.json({ success: true, message: 'Tickets fetched', data: tickets });
   } catch (error) {
     next(error);
@@ -178,15 +193,21 @@ export const getTicketSummary = async (req: Request, res: Response, next: NextFu
     ]);
 
     const formattedSummary: Record<string, number> = {
-      New: 0,
-      'In Progress': 0,
-      Resolved: 0,
-      Closed: 0,
+      new: 0,
+      inProgress: 0,
+      resolved: 0,
+      closed: 0,
     };
 
     summary.forEach((item: { _id: string; count: number }) => {
-      if (formattedSummary[item._id] !== undefined) {
-        formattedSummary[item._id] = item.count;
+      let key = '';
+      if (item._id === 'New') key = 'new';
+      else if (item._id === 'In Progress') key = 'inProgress';
+      else if (item._id === 'Resolved') key = 'resolved';
+      else if (item._id === 'Closed') key = 'closed';
+
+      if (key && formattedSummary[key] !== undefined) {
+        formattedSummary[key] = item.count;
       }
     });
 

@@ -11,6 +11,7 @@ import { NewTicketPage } from '@/pages/NewTicketPage';
 import { TicketDetailsPage } from '@/pages/TicketDetailsPage';
 import { StaffTickets } from '@/pages/StaffTickets';
 import { ManagerQueue } from '@/pages/ManagerQueue';
+import { LoaderPreview } from '@/pages/LoaderPreview';
 
 // --- Root redirect based on role ---
 const RootRedirect = () => {
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
     element: <MainLayout />,
     errorElement: <ErrorPage />,
     children: [
+      {
+        path: 'loader-preview',
+        element: <LoaderPreview />,
+      },
       { path: 'login',    element: <LoginPage /> },
       { path: 'register', element: <Register /> },
       {
