@@ -3,7 +3,10 @@ import { UserRole } from '../types';
 
 export const roleCheck = (...roles: UserRole[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user || !roles.includes(req.user.role)) {
+    const userRole = req.user?.role?.toLowerCase();
+    const allowedRoles = roles.map((r) => r.toLowerCase());
+
+    if (!req.user || !userRole || !allowedRoles.includes(userRole)) {
       return res.status(403).json({
         success: false,
         message: 'Not authorized for this role',

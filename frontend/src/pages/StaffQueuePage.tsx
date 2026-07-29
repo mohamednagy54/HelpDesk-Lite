@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { Eye, RefreshCw, Filter, ShieldAlert } from 'lucide-react';
+import { Eye, RefreshCw, Filter, Inbox } from 'lucide-react';
 
-export const ManagerQueuePage: React.FC = () => {
+export const StaffQueuePage: React.FC = () => {
   const navigate = useNavigate();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -24,14 +24,14 @@ export const ManagerQueuePage: React.FC = () => {
       if (response.success && Array.isArray(response.data)) {
         setTickets(response.data);
       } else {
-        setError('Failed to fetch manager ticket queue.');
+        setError('Failed to fetch support queue.');
       }
     } catch (err: any) {
       if (err?.response?.status === 401) {
         navigate('/login', { replace: true });
         return;
       }
-      setError(err?.response?.data?.message || 'We couldn\'t load the ticket queue. Please try again.');
+      setError(err?.response?.data?.message || err?.message || 'We couldn\'t load the support queue. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -51,9 +51,9 @@ export const ManagerQueuePage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Manager Ticket Queue</h1>
+          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Staff Support Queue</h1>
           <p className="text-sm text-slate-400 mt-1">
-            Global management view: Assign staff, manage ticket lifecycle, and oversee queue
+            Review and process support tickets submitted by all users
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -96,7 +96,7 @@ export const ManagerQueuePage: React.FC = () => {
       {/* Content Area */}
       {isLoading ? (
         <Card className="p-12">
-          <LoadingState message="Fetching global ticket queue..." />
+          <LoadingState message="Fetching support tickets..." />
         </Card>
       ) : error ? (
         <Card className="p-8 text-center border-red-900/30 bg-red-950/10">
@@ -108,12 +108,12 @@ export const ManagerQueuePage: React.FC = () => {
       ) : filteredTickets.length === 0 ? (
         <Card className="p-12">
           <EmptyState
-            icon={<ShieldAlert className="h-8 w-8 text-slate-400" />}
-            title="Queue Empty"
+            icon={<Inbox className="h-8 w-8 text-slate-400" />}
+            title="No tickets in queue"
             description={
               statusFilter === 'all'
-                ? 'No tickets found in the system.'
-                : `No tickets found matching status "${statusFilter}".`
+                ? 'There are currently no support tickets submitted by users.'
+                : `No tickets found with status "${statusFilter}".`
             }
           />
         </Card>
@@ -126,7 +126,7 @@ export const ManagerQueuePage: React.FC = () => {
                   <th className="px-6 py-4 font-semibold">Ticket ID</th>
                   <th className="px-6 py-4 font-semibold">Category</th>
                   <th className="px-6 py-4 font-semibold">Requester</th>
-                  <th className="px-6 py-4 font-semibold">Assigned To</th>
+                  <th className="px-6 py-4 font-semibold">Description</th>
                   <th className="px-6 py-4 font-semibold">Status</th>
                   <th className="px-6 py-4 font-semibold">Date</th>
                   <th className="px-6 py-4 font-semibold text-right">Actions</th>
@@ -152,10 +152,6 @@ export const ManagerQueuePage: React.FC = () => {
                     ? ticket.requester.name
                     : 'Requester';
 
-                  const ownerName = typeof ticket.owner === 'object' && ticket.owner?.name
-                    ? ticket.owner.name
-                    : 'Unassigned';
-
                   return (
                     <tr
                       key={ticket._id || ticket.id}
@@ -170,10 +166,8 @@ export const ManagerQueuePage: React.FC = () => {
                       <td className="px-6 py-4 text-slate-300">
                         {requesterName}
                       </td>
-                      <td className="px-6 py-4 text-slate-400 text-xs">
-                        <span className={ownerName === 'Unassigned' ? 'text-amber-400/80 italic' : 'text-slate-300 font-medium'}>
-                          {ownerName}
-                        </span>
+                      <td className="px-6 py-4 text-slate-300 max-w-xs truncate">
+                        {ticket.description}
                       </td>
                       <td className="px-6 py-4">
                         <Badge status={ticket.status} />
@@ -189,7 +183,7 @@ export const ManagerQueuePage: React.FC = () => {
                             className="text-slate-300 hover:text-indigo-400 hover:bg-slate-800"
                           >
                             <Eye className="h-4 w-4 mr-1.5" />
-                            Manage
+                            View
                           </Button>
                         </Link>
                       </td>

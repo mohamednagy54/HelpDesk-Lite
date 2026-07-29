@@ -17,11 +17,13 @@ const router = Router();
 router.use(protect);
 
 router.post('/', createTicket);
-router.get('/my', roleCheck('requester'), getMyTickets);
+router.get('/', roleCheck('staff', 'manager', 'requester'), getTickets);
+router.get('/all', roleCheck('staff', 'manager', 'requester'), getTickets);
+router.get('/my', roleCheck('requester', 'staff', 'manager'), getMyTickets);
+router.get('/mine', roleCheck('requester', 'staff', 'manager'), getMyTickets);
 router.get('/summary', roleCheck('manager'), getTicketSummary);
 router.get('/:id', getTicket);
 router.patch('/:id/assign', roleCheck('staff', 'manager'), assignTicket);
 router.patch('/:id/status', roleCheck('staff', 'manager'), updateTicketStatus);
-router.get('/', roleCheck('staff', 'manager'), getTickets);
 
 export default router;

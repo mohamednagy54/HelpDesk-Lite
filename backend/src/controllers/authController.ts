@@ -13,7 +13,7 @@ const getRefreshSecret = (): string => {
 
 const generateAccessToken = (id: string | object, role: UserRole): string => {
   return jwt.sign({ id, role }, getJwtSecret(), {
-    expiresIn: '7d',
+    expiresIn: '7d', // 7 days for development ease
   });
 };
 

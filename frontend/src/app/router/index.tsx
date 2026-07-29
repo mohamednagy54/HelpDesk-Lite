@@ -1,96 +1,91 @@
 import React from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { AppShell } from '@/components/layout/AppShell';
-import { ProtectedRoute } from './ProtectedRoute';
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+import { MainLayout } from '../layouts/MainLayout';
+import { ProtectedRoute } from '@/routes/ProtectedRoute';
 import { ErrorPage } from '@/pages/ErrorPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
-import { LoginPage } from '@/features/auth/pages/LoginPage';
-import { RootRedirect } from '@/pages/RootRedirect';
-import { MyRequestsPage } from '@/pages/MyRequestsPage';
-import { NewTicketPage } from '@/pages/NewTicketPage';
-import { TicketDetailsPage } from '@/pages/TicketDetailsPage';
-import { StaffTicketsPage } from '@/pages/StaffTicketsPage';
+import Login from '@/pages/Login';
+import Register from '@/pages/Register';
+import MyRequestsPage from '@/pages/MyRequestsPage';
+import NewTicketPage from '@/pages/NewTicketPage';
+import TicketDetailsPage from '@/pages/TicketDetailsPage';
+import { StaffQueuePage } from '@/pages/StaffQueuePage';
 import { ManagerQueuePage } from '@/pages/ManagerQueuePage';
-import { ManagerSummaryPage } from '@/pages/ManagerSummaryPage';
+import { useAuthStore } from '@/features/auth/store/auth.store';
+
+const RootRedirect = () => {
+  const user = useAuthStore((state) => state.user);
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role === 'staff') return <Navigate to="/staff/tickets" replace />;
+  if (user.role === 'manager') return <Navigate to="/manager/queue" replace />;
+  return <Navigate to="/my-requests" replace />;
+};
 
 const router = createBrowserRouter([
   {
-    path: '/login',
-    element: <LoginPage />,
-    errorElement: <ErrorPage />,
-  },
-  {
     path: '/',
-    element: <ProtectedRoute />, // Base auth guard for all app shell routes
+    element: <MainLayout />,
     errorElement: <ErrorPage />,
     children: [
       {
-        element: <AppShell />,
+        path: 'login',
+        element: <Login />,
+      },
+      {
+        path: 'register',
+        element: <Register />,
+      },
+      {
+        path: '/',
+        element: <ProtectedRoute />,
         children: [
           {
             index: true,
             element: <RootRedirect />,
           },
           {
-            path: 'dashboard',
-            element: <RootRedirect />,
+            path: 'my-requests',
+            element: (
+              <ProtectedRoute allowedRoles={['requester', 'staff', 'manager']}>
+                <MyRequestsPage />
+              </ProtectedRoute>
+            ),
           },
           {
-            element: <ProtectedRoute allowedRoles={['requester', 'staff']} />,
-            children: [
-              {
-                path: 'my-requests',
-                element: <MyRequestsPage />,
-              },
-            ],
+            path: 'new-ticket',
+            element: (
+              <ProtectedRoute allowedRoles={['requester', 'staff', 'manager']}>
+                <NewTicketPage />
+              </ProtectedRoute>
+            ),
           },
           {
-            element: <ProtectedRoute allowedRoles={['requester']} />,
-            children: [
-              {
-                path: 'new-ticket',
-                element: <NewTicketPage />,
-              },
-            ],
+            path: 'tickets/:id',
+            element: <TicketDetailsPage />,
           },
           {
-            element: <ProtectedRoute allowedRoles={['requester', 'staff', 'manager']} />,
-            children: [
-              {
-                path: 'tickets/:id',
-                element: <TicketDetailsPage />,
-              },
-            ],
+            path: 'staff/tickets',
+            element: (
+              <ProtectedRoute allowedRoles={['staff', 'manager']}>
+                <StaffQueuePage />
+              </ProtectedRoute>
+            ),
           },
           {
-            element: <ProtectedRoute allowedRoles={['staff']} />,
-            children: [
-              {
-                path: 'staff/tickets',
-                element: <StaffTicketsPage />,
-              },
-            ],
-          },
-          {
-            element: <ProtectedRoute allowedRoles={['manager']} />,
-            children: [
-              {
-                path: 'manager/queue',
-                element: <ManagerQueuePage />,
-              },
-              {
-                path: 'manager/summary',
-                element: <ManagerSummaryPage />,
-              },
-            ],
+            path: 'manager/queue',
+            element: (
+              <ProtectedRoute allowedRoles={['manager']}>
+                <ManagerQueuePage />
+              </ProtectedRoute>
+            ),
           },
         ],
       },
+      {
+        path: '*',
+        element: <NotFoundPage />,
+      },
     ],
-  },
-  {
-    path: '*',
-    element: <NotFoundPage />,
   },
 ]);
 
