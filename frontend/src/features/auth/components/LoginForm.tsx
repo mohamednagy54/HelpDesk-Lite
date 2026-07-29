@@ -24,10 +24,9 @@ export const LoginForm = () => {
     mutationFn: authApi.login,
     onSuccess: (response) => {
       if (response.success) {
-        localStorage.setItem('auth_token', response.data.token);
         setUser(response.data);
         toast.success(response.message);
-        navigate('/dashboard');
+        navigate('/');
       }
     },
     onError: (error: any) => {

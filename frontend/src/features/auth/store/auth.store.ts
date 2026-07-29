@@ -1,27 +1,30 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import axios from 'axios';
 import type { User } from '../types/auth.types';
 
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
+  isInitializing: boolean;
   setUser: (user: User | null) => void;
-  logout: () => void;
+  setInitializing: (isInitializing: boolean) => void;
+  logout: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      user: null,
-      isAuthenticated: false,
-      setUser: (user) => set({ user, isAuthenticated: !!user }),
-      logout: () => {
-        localStorage.removeItem('auth_token');
-        set({ user: null, isAuthenticated: false });
-      },
-    }),
-    {
-      name: 'auth-storage',
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  isAuthenticated: false,
+  isInitializing: true,
+  setUser: (user) => set({ user, isAuthenticated: !!user }),
+  setInitializing: (isInitializing) => set({ isInitializing }),
+  logout: async () => {
+    try {
+      await axios.post(`${BASE_URL}/auth/logout`, {}, { withCredentials: true });
+    } catch (e) {
+      // Ignore errors on logout
     }
-  )
-);
+    set({ user: null, isAuthenticated: false, isInitializing: false });
+  },
+}));
