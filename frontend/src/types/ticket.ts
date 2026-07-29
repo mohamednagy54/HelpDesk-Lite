@@ -1,17 +1,36 @@
 export type TicketStatus = 'New' | 'In Progress' | 'Resolved' | 'Closed';
-// Keep legacy alias for any files still using the old name
-export type TicketStatusType = TicketStatus;
+
+export type TicketCategory = 'Access' | 'Software' | 'Hardware' | 'Other';
+
+export interface UserRef {
+  _id: string;
+  name: string;
+  email: string;
+}
 
 export interface Ticket {
   _id: string;
   id?: string; // some API shapes may include this
+  category: TicketCategory;
   description: string;
-  category: string;
   status: TicketStatus;
-  requester: { _id: string; name: string; email: string } | string;
-  owner: { _id: string; name: string; email: string } | string | null;
+  requester: UserRef | string;
+  owner?: UserRef | string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CreateTicketInput {
+  category: TicketCategory;
+  description: string;
+}
+
+export interface UpdateStatusInput {
+  status: TicketStatus;
+}
+
+export interface AssignOwnerInput {
+  ownerId: string;
 }
 
 export interface TicketSummary {
@@ -20,3 +39,6 @@ export interface TicketSummary {
   resolved: number;
   closed: number;
 }
+
+// Legacy alias
+export type TicketStatusType = TicketStatus;

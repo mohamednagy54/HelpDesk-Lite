@@ -17,11 +17,19 @@ const router = Router();
 router.use(protect);
 
 router.post('/', createTicket);
-router.get('/my', roleCheck('requester'), getMyTickets);
+
+// Named routes before /:id to avoid param capture
+router.get('/all', roleCheck('staff', 'manager'), getTickets);   // used by Staff & Manager pages
+router.get('/my', roleCheck('requester', 'staff', 'manager'), getMyTickets);
+router.get('/mine', roleCheck('requester', 'staff', 'manager'), getMyTickets); // alias
 router.get('/summary', roleCheck('manager'), getTicketSummary);
+
+// Single ticket
 router.get('/:id', getTicket);
 router.patch('/:id/assign', roleCheck('staff', 'manager'), assignTicket);
 router.patch('/:id/status', roleCheck('staff', 'manager'), updateTicketStatus);
+
+// Root list (staff/manager with optional ?status or ?open filter)
 router.get('/', roleCheck('staff', 'manager'), getTickets);
 
 export default router;
