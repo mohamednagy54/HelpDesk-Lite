@@ -2,7 +2,7 @@ import React from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/queryClient';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider } from '@/context/AuthContext';
+import { AuthProvider } from './AuthProvider';
 
 export const AppProviders = ({ children }: { children: React.ReactNode }) => {
   return (

@@ -4,14 +4,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
-import { useAuth } from '../context/AuthContext';
+import { useAuthStore } from '../features/auth/store/auth.store';
+import { authApi } from '../features/auth/api/auth.api';
 import { loginSchema, type LoginInput } from '../schemas/auth.schema';
 import { AuthCard } from '../components/auth/AuthCard';
 import { PasswordInput } from '../components/auth/PasswordInput';
 import { FormError } from '../components/auth/FormError';
 
 export const Login: React.FC = () => {
-  const { login } = useAuth();
+  const setUser = useAuthStore(state => state.setUser);
   const navigate = useNavigate();
   const location = useLocation();
   const [serverError, setServerError] = useState<string | null>(null);
@@ -31,7 +32,12 @@ export const Login: React.FC = () => {
   const onSubmit = async (data: LoginInput) => {
     setServerError(null);
     try {
-      const user = await login(data);
+      const response = await authApi.login(data);
+      if (!response.success || !response.data) {
+         throw new Error(response.message || 'Login failed');
+      }
+      const user = response.data;
+      setUser(user);
       
       // Determine redirection path based on role or location state
       const from = (location.state as { from?: { pathname?: string } })?.from?.pathname;

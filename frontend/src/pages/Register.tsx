@@ -4,14 +4,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
-import { useAuth } from '../context/AuthContext';
+import { useAuthStore } from '../features/auth/store/auth.store';
+import { authApi } from '../features/auth/api/auth.api';
 import { registerSchema, type RegisterInput } from '../schemas/auth.schema';
 import { AuthCard } from '../components/auth/AuthCard';
 import { PasswordInput } from '../components/auth/PasswordInput';
 import { FormError } from '../components/auth/FormError';
 
 export const Register: React.FC = () => {
-  const { register: registerAuth } = useAuth();
+  const setUser = useAuthStore(state => state.setUser);
   const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -33,12 +34,19 @@ export const Register: React.FC = () => {
   const onSubmit = async (data: RegisterInput) => {
     setServerError(null);
     try {
-      const user = await registerAuth({
+      const response = await authApi.register({
         name: data.name,
         email: data.email,
         password: data.password,
         role: data.role,
       });
+
+      if (!response.success || !response.data) {
+        throw new Error(response.message || 'Registration failed');
+      }
+
+      const user = response.data;
+      setUser(user);
 
       // Redirect user by assigned role after successful auto-login
       switch (user.role) {

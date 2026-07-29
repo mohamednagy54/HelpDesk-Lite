@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuthStore } from '../features/auth/store/auth.store';
 import type { UserRole } from '../types/auth.types';
 import { Loader2 } from 'lucide-react';
 
@@ -10,10 +10,10 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles, children }) => {
-  const { isAuthenticated, user, isLoading } = useAuth();
+  const { isAuthenticated, user, isInitializing } = useAuthStore();
   const location = useLocation();
 
-  if (isLoading) {
+  if (isInitializing) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-900 text-indigo-400">
         <Loader2 className="w-8 h-8 animate-spin" />
