@@ -52,25 +52,25 @@ export const ManagerQueue: React.FC = () => {
   const isLoading = isLoadingSummary || isLoadingTickets;
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-6xl space-y-8">
+    <div className="container mx-auto py-6 px-4 max-w-6xl space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-100">Manager Queue</h1>
-        <p className="text-sm text-slate-400 mt-1">
+        <h1 className="text-xl font-semibold tracking-tight text-slate-100">Manager Queue</h1>
+        <p className="text-xs text-slate-400 mt-0.5">
           High-level overview of support tickets, workloads, and team assignments.
         </p>
       </div>
 
       {/* Status Summary Widget */}
       <section aria-label="Ticket status summary">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">Status Summary</h2>
+        <h2 className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5">Status Summary</h2>
         {isLoadingSummary ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {['New', 'In Progress', 'Resolved', 'Closed'].map((s) => (
-              <div key={s} className="h-24 rounded-xl border border-slate-800 bg-slate-900/60 animate-pulse" />
+              <div key={s} className="h-20 rounded-md border border-slate-800 bg-[#111827] animate-pulse" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <StatusSummaryCard title="New"         count={summary?.new ?? 0}        status="New" />
             <StatusSummaryCard title="In Progress" count={summary?.inProgress ?? 0} status="In Progress" />
             <StatusSummaryCard title="Resolved"    count={summary?.resolved ?? 0}   status="Resolved" />
@@ -81,22 +81,23 @@ export const ManagerQueue: React.FC = () => {
 
       {/* Ticket Table */}
       <section>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
-          <h2 className="text-base font-semibold text-slate-200">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-3">
+          <h2 className="text-sm font-semibold text-slate-200">
             {showAll ? 'All Tickets' : 'Open Tickets'}
           </h2>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setShowAll(!showAll)}
+            className="text-xs"
           >
             {showAll ? 'Show open only' : 'Show all tickets'}
           </Button>
         </div>
 
-        <div className="rounded-xl border border-slate-800 bg-slate-900/80 overflow-hidden">
+        <div className="rounded-md border border-slate-800 bg-[#111827] overflow-hidden">
           {isLoadingTickets ? (
-            <LoadingState text="Loading queue..." />
+            <LoadingState message="Loading queue..." />
           ) : error ? (
             <EmptyState
               title="Failed to load tickets"
@@ -109,16 +110,16 @@ export const ManagerQueue: React.FC = () => {
             />
           ) : (
             <div className="relative w-full overflow-auto">
-              <table className="w-full caption-bottom text-sm">
-                <thead className="border-b border-slate-800 bg-slate-950/60">
+              <table className="w-full caption-bottom text-sm border-collapse">
+                <thead className="border-b border-slate-800 bg-[#161f30]">
                   <tr>
-                    <th className="h-11 px-4 text-left align-middle text-xs font-semibold uppercase tracking-wider text-slate-400 w-[100px]">ID</th>
-                    <th className="h-11 px-4 text-left align-middle text-xs font-semibold uppercase tracking-wider text-slate-400">Requester</th>
-                    <th className="h-11 px-4 text-left align-middle text-xs font-semibold uppercase tracking-wider text-slate-400">Category</th>
-                    <th className="h-11 px-4 text-left align-middle text-xs font-semibold uppercase tracking-wider text-slate-400">Status</th>
-                    <th className="h-11 px-4 text-left align-middle text-xs font-semibold uppercase tracking-wider text-slate-400">Owner</th>
-                    <th className="h-11 px-4 text-right align-middle text-xs font-semibold uppercase tracking-wider text-slate-400">Date</th>
-                    <th className="h-11 px-4 text-right align-middle text-xs font-semibold uppercase tracking-wider text-slate-400">Action</th>
+                    <th className="h-10 px-4 text-left align-middle text-[11px] font-semibold uppercase tracking-wider text-slate-400 w-[100px]">ID</th>
+                    <th className="h-10 px-4 text-left align-middle text-[11px] font-semibold uppercase tracking-wider text-slate-400">Requester</th>
+                    <th className="h-10 px-4 text-left align-middle text-[11px] font-semibold uppercase tracking-wider text-slate-400">Category</th>
+                    <th className="h-10 px-4 text-left align-middle text-[11px] font-semibold uppercase tracking-wider text-slate-400">Status</th>
+                    <th className="h-10 px-4 text-left align-middle text-[11px] font-semibold uppercase tracking-wider text-slate-400">Owner</th>
+                    <th className="h-10 px-4 text-right align-middle text-[11px] font-semibold uppercase tracking-wider text-slate-400">Date</th>
+                    <th className="h-10 px-4 text-right align-middle text-[11px] font-semibold uppercase tracking-wider text-slate-400">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">

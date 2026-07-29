@@ -117,22 +117,22 @@ export const TicketDetailsPage: React.FC = () => {
           {/* Main Card */}
           <Card className="space-y-6">
             {/* Header / Meta */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
               <div className="space-y-1">
-                <div className="flex items-center gap-3">
-                  <span className="font-mono text-sm font-bold text-indigo-400">
+                <div className="flex items-center gap-2.5">
+                  <span className="font-mono text-xs font-semibold text-indigo-400">
                     #{ticket._id.slice(-6).toUpperCase()}
                   </span>
-                  <Badge status={ticket.status} className="text-xs px-3 py-1" />
+                  <Badge status={ticket.status} className="text-xs px-2.5 py-0.5" />
                 </div>
-                <h1 className="text-xl font-bold text-slate-100 tracking-tight">
+                <h1 className="text-xl font-semibold text-slate-100 tracking-tight">
                   {ticket.category} Request
                 </h1>
               </div>
 
               {/* Action Controls Section (Only Staff / Manager) */}
               {currentUser && currentUser.role !== 'requester' && (
-                <div className="flex flex-wrap items-center gap-4 bg-slate-950/60 p-3 rounded-lg border border-slate-800/80">
+                <div className="flex flex-wrap items-center gap-3 bg-[#161f30] p-3 rounded-md border border-slate-800">
                   <StatusChangeControl
                     currentStatus={ticket.status}
                     onUpdateStatus={handleUpdateStatus}
@@ -146,7 +146,7 @@ export const TicketDetailsPage: React.FC = () => {
             </div>
 
             {/* Core Ticket Information Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-950/40 p-4 rounded-lg border border-slate-800/60 text-xs">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#161f30] p-4 rounded-md border border-slate-800 text-xs">
               <div className="flex items-center gap-2 text-slate-300">
                 <Tag className="w-4 h-4 text-slate-400" />
                 <span className="text-slate-400">Category:</span>

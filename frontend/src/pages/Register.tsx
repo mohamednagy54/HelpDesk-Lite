@@ -105,8 +105,8 @@ export const Register: React.FC = () => {
             autoFocus
             autoComplete="name"
             placeholder="John Doe"
-            className={`w-full px-3.5 py-2.5 bg-slate-800/80 border rounded-lg text-slate-100 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors ${
-              errors.name ? 'border-red-500/80 focus:ring-red-500' : 'border-slate-700 hover:border-slate-600'
+            className={`w-full px-3 py-2 bg-slate-900 border rounded-md text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
+              errors.name ? 'border-red-500/80 focus:ring-red-500' : 'border-slate-800 hover:border-slate-700'
             }`}
             {...register('name')}
           />
@@ -125,8 +125,8 @@ export const Register: React.FC = () => {
             type="email"
             autoComplete="email"
             placeholder="you@company.com"
-            className={`w-full px-3.5 py-2.5 bg-slate-800/80 border rounded-lg text-slate-100 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors ${
-              errors.email ? 'border-red-500/80 focus:ring-red-500' : 'border-slate-700 hover:border-slate-600'
+            className={`w-full px-3 py-2 bg-slate-900 border rounded-md text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
+              errors.email ? 'border-red-500/80 focus:ring-red-500' : 'border-slate-800 hover:border-slate-700'
             }`}
             {...register('email')}
           />
@@ -176,8 +176,8 @@ export const Register: React.FC = () => {
           </label>
           <select
             id="role"
-            className={`w-full px-3.5 py-2.5 bg-slate-800/80 border rounded-lg text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors ${
-              errors.role ? 'border-red-500/80 focus:ring-red-500' : 'border-slate-700 hover:border-slate-600'
+            className={`w-full px-3 py-2 bg-slate-900 border rounded-md text-slate-100 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors ${
+              errors.role ? 'border-red-500/80 focus:ring-red-500' : 'border-slate-800 hover:border-slate-700'
             }`}
             {...register('role')}
           >
@@ -197,7 +197,7 @@ export const Register: React.FC = () => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-sm rounded-lg shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all duration-200 mt-2"
+          className="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-xs rounded-md flex items-center justify-center gap-2 transition-all duration-150 mt-1"
         >
           {isSubmitting ? (
             <>

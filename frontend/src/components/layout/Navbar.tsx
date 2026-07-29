@@ -18,15 +18,15 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-900/90 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-800 bg-[#0b0f19]">
+      <div className="max-w-7xl mx-auto flex h-14 items-center justify-between px-4 sm:px-6">
         {/* Brand / Logo */}
         <div className="flex items-center gap-6">
           <NavLink to="/" className="flex items-center gap-2.5 group">
-            <div className="p-2 rounded-xl bg-indigo-600/20 text-indigo-400 group-hover:bg-indigo-600/30 group-hover:scale-105 transition-all">
-              <LifeBuoy className="w-5 h-5" />
+            <div className="p-1.5 rounded-md bg-indigo-950/60 border border-indigo-800/40 text-indigo-400 transition-colors">
+              <LifeBuoy className="w-4 h-4" />
             </div>
-            <span className="text-base font-bold text-slate-100 tracking-tight">
+            <span className="text-sm font-semibold text-slate-100 tracking-tight">
               HelpDesk <span className="text-indigo-400 font-normal text-xs uppercase tracking-wider ml-0.5">Lite</span>
             </span>
           </NavLink>
@@ -37,28 +37,28 @@ export const Navbar: React.FC = () => {
               <NavLink
                 to="/my-requests"
                 className={({ isActive }) =>
-                  `flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors ${
+                  `flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors ${
                     isActive
-                      ? 'bg-slate-800 text-indigo-400 font-semibold'
+                      ? 'bg-slate-800 text-indigo-400 font-medium'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
                   }`
                 }
               >
-                <Ticket className="w-4 h-4" />
+                <Ticket className="w-3.5 h-3.5" />
                 <span>My Requests</span>
               </NavLink>
 
               <NavLink
                 to="/new-ticket"
                 className={({ isActive }) =>
-                  `flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors ${
+                  `flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors ${
                     isActive
-                      ? 'bg-slate-800 text-indigo-400 font-semibold'
+                      ? 'bg-slate-800 text-indigo-400 font-medium'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
                   }`
                 }
               >
-                <PlusCircle className="w-4 h-4" />
+                <PlusCircle className="w-3.5 h-3.5" />
                 <span>New Ticket</span>
               </NavLink>
 
@@ -66,14 +66,14 @@ export const Navbar: React.FC = () => {
                 <NavLink
                   to="/staff/tickets"
                   className={({ isActive }) =>
-                    `flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors ${
+                    `flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors ${
                       isActive
-                        ? 'bg-slate-800 text-indigo-400 font-semibold'
+                        ? 'bg-slate-800 text-indigo-400 font-medium'
                         : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
                     }`
                   }
                 >
-                  <LayoutDashboard className="w-4 h-4" />
+                  <LayoutDashboard className="w-3.5 h-3.5" />
                   <span>Staff Queue</span>
                 </NavLink>
               )}
@@ -82,14 +82,14 @@ export const Navbar: React.FC = () => {
                 <NavLink
                   to="/manager/queue"
                   className={({ isActive }) =>
-                    `flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors ${
+                    `flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-colors ${
                       isActive
-                        ? 'bg-slate-800 text-indigo-400 font-semibold'
+                        ? 'bg-slate-800 text-indigo-400 font-medium'
                         : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
                     }`
                   }
                 >
-                  <LayoutDashboard className="w-4 h-4" />
+                  <LayoutDashboard className="w-3.5 h-3.5" />
                   <span>Manager Queue</span>
                 </NavLink>
               )}
@@ -100,10 +100,10 @@ export const Navbar: React.FC = () => {
         {/* User Info & Actions */}
         {!isAuthPage && user ? (
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-950/60 border border-slate-800">
+            <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#111827] border border-slate-800">
               <User className="w-3.5 h-3.5 text-slate-400" />
               <span className="text-xs font-medium text-slate-200">{user.name}</span>
-              <Badge role={user.role} className="text-[10px] px-2 py-0 capitalize" />
+              <Badge role={user.role} className="text-[10px] px-1.5 py-0 capitalize" />
             </div>
 
             <Button
@@ -114,7 +114,7 @@ export const Navbar: React.FC = () => {
                 if (btn) btn.classList.add('animate-spin');
                 await handleLogout();
               }}
-              className="text-xs text-slate-300 border-slate-700 hover:bg-slate-800 hover:text-red-400 gap-1.5 disabled:opacity-50"
+              className="text-xs text-slate-300 border-slate-800 hover:bg-slate-800 hover:text-red-400 gap-1.5 disabled:opacity-50"
             >
               <LogOut id="logout-icon" className="w-3.5 h-3.5" />
               <span>Logout</span>
@@ -129,7 +129,7 @@ export const Navbar: React.FC = () => {
                 </Button>
               </NavLink>
               <NavLink to="/register">
-                <Button variant="primary" size="sm" className="text-xs">
+                <Button variant="default" size="sm" className="text-xs">
                   Register
                 </Button>
               </NavLink>

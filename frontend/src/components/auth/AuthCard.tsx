@@ -9,19 +9,18 @@ interface AuthCardProps {
 
 export const AuthCard: React.FC<AuthCardProps> = ({ title, subtitle, children }) => {
   return (
-    <div className="w-full flex items-center justify-center py-6 sm:py-12">
-      <div className="w-full max-w-[440px] bg-slate-900/90 border border-slate-800/90 rounded-2xl p-6 sm:p-8 shadow-lg transition-all duration-300">
-        <div className="flex flex-col items-center text-center mb-6">
-          <div className="w-11 h-11 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 mb-3">
-            <LifeBuoy className="w-5 h-5" />
+    <div className="w-full flex items-center justify-center py-6 sm:py-12 px-4">
+      <div className="w-full max-w-[420px] bg-[#111827] border border-slate-800 rounded-md p-6 sm:p-8">
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-800">
+          <div className="p-1.5 rounded-md bg-indigo-950/60 border border-indigo-800/40 text-indigo-400">
+            <LifeBuoy className="w-4 h-4" />
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-1.5">
-            HelpDesk <span className="text-indigo-400 font-normal">Lite</span>
-          </h1>
-          <h2 className="text-base font-semibold text-slate-200 mt-3">{title}</h2>
-          {subtitle && (
-            <p className="text-xs text-slate-400 mt-1 max-w-xs">{subtitle}</p>
-          )}
+          <div>
+            <h1 className="text-sm font-semibold tracking-tight text-white">
+              HelpDesk <span className="text-indigo-400 font-normal">Lite</span>
+            </h1>
+            <p className="text-xs text-slate-400">{title}</p>
+          </div>
         </div>
         {children}
       </div>

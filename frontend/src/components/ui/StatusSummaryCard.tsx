@@ -14,9 +14,9 @@ export const StatusSummaryCard: React.FC<StatusSummaryCardProps> = ({ title, cou
   const { text, bg } = STATUS_STYLES[status];
 
   return (
-    <div className={cn('rounded-xl border p-5 flex flex-col gap-2', bg, className)}>
-      <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{title}</p>
-      <p className={cn('text-4xl font-bold tabular-nums', text)}>{count}</p>
+    <div className={cn('rounded-md border p-4 flex flex-col justify-between gap-1.5', bg, className)}>
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{title}</p>
+      <p className={cn('text-2xl font-semibold tabular-nums tracking-tight', text)}>{count}</p>
     </div>
   );
 };

@@ -130,14 +130,14 @@ export const NewTicketPage: React.FC = () => {
         /* Form State */
         <Card className="space-y-6">
           <div className="border-b border-slate-800 pb-4">
-            <h1 className="text-xl font-bold text-slate-100">New Support Request</h1>
+            <h1 className="text-xl font-semibold text-slate-100">New Support Request</h1>
             <p className="text-xs text-slate-400 mt-1">
               Please describe your problem in detail so our support staff can resolve it efficiently.
             </p>
           </div>
 
           {errorMsg && (
-            <div className="bg-red-950/40 border border-red-500/30 text-red-400 p-3.5 rounded-lg text-xs font-medium">
+            <div className="bg-red-950/40 border border-red-800/40 text-red-400 p-3 rounded-md text-xs font-medium">
               {errorMsg}
             </div>
           )}
@@ -152,10 +152,10 @@ export const NewTicketPage: React.FC = () => {
                 id="category"
                 value={category}
                 onChange={(e) => setCategory(e.target.value as TicketCategory)}
-                className="w-full bg-slate-800/90 border border-slate-700 rounded-lg px-3.5 py-2.5 text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                className="w-full bg-slate-900 border border-slate-800 rounded-md px-3 py-2 text-slate-100 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
               >
                 <option value="" disabled className="text-slate-500">
-                  Select a issue category...
+                  Select an issue category...
                 </option>
                 {CATEGORIES.map((cat) => (
                   <option key={cat} value={cat} className="bg-slate-900 text-slate-100">
@@ -173,7 +173,7 @@ export const NewTicketPage: React.FC = () => {
                 </label>
                 <span
                   className={`text-xs font-mono ${
-                    description.trim().length >= 10 ? 'text-slate-400' : 'text-amber-400/90'
+                    description.trim().length >= 10 ? 'text-slate-500' : 'text-amber-400/90'
                   }`}
                 >
                   {description.trim().length} / 10 min chars
@@ -185,7 +185,7 @@ export const NewTicketPage: React.FC = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Explain what happened, steps to reproduce, or any error messages..."
-                className="w-full bg-slate-800/90 border border-slate-700 rounded-lg p-3.5 text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors resize-none"
+                className="w-full bg-slate-900 border border-slate-800 rounded-md p-3 text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-colors resize-none"
               />
               {description.length > 0 && description.trim().length < 10 && (
                 <p className="text-xs text-amber-400/90 font-medium">
@@ -199,16 +199,18 @@ export const NewTicketPage: React.FC = () => {
               <Button
                 type="button"
                 variant="outline"
+                size="sm"
                 onClick={() => navigate('/my-requests')}
                 disabled={isSubmitting}
-                className="border-slate-700 text-slate-400 hover:text-slate-200 text-xs py-2 px-4"
+                className="text-xs"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
+                size="sm"
                 disabled={!isFormValid || isSubmitting}
-                className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 text-white text-xs font-medium px-5 py-2.5 rounded-lg flex items-center gap-2 transition-all"
+                className="text-xs font-medium flex items-center gap-2"
               >
                 {isSubmitting ? (
                   <>

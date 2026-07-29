@@ -49,10 +49,10 @@ export const StaffQueuePage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Staff Support Queue</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <h1 className="text-xl font-semibold text-slate-100 tracking-tight">Staff Support Queue</h1>
+          <p className="text-xs text-slate-400 mt-0.5">
             Review and process support tickets submitted by all users
           </p>
         </div>
@@ -62,29 +62,29 @@ export const StaffQueuePage: React.FC = () => {
             size="sm"
             onClick={fetchTickets}
             disabled={isLoading}
-            className="flex items-center gap-2 border-slate-700 hover:bg-slate-800 text-slate-300"
+            className="flex items-center gap-1.5 border-slate-800 text-xs"
           >
-            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
         </div>
       </div>
 
       {/* Filter Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-900/60 border border-slate-800 rounded-xl p-4">
-        <div className="flex items-center gap-2 text-sm text-slate-400">
-          <Filter className="h-4 w-4 text-indigo-400" />
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-[#111827] border border-slate-800 rounded-md p-3">
+        <div className="flex items-center gap-2 text-xs text-slate-400">
+          <Filter className="h-3.5 w-3.5 text-indigo-400" />
           <span className="font-medium text-slate-300">Filter by Status:</span>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5">
           {['all', 'New', 'In Progress', 'Resolved', 'Closed'].map((status) => (
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
                 statusFilter === status
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
-                  : 'bg-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-700/80'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-slate-900 text-slate-400 hover:text-slate-200 hover:bg-slate-800 border border-slate-800'
               }`}
             >
               {status === 'all' ? 'All Tickets' : status}
@@ -99,8 +99,8 @@ export const StaffQueuePage: React.FC = () => {
           <LoadingState message="Fetching support tickets..." />
         </Card>
       ) : error ? (
-        <Card className="p-8 text-center border-red-900/30 bg-red-950/10">
-          <p className="text-red-400 mb-4 text-sm font-medium">{error}</p>
+        <Card className="p-8 text-center border-red-950/40 bg-red-950/10">
+          <p className="text-red-400 mb-4 text-xs font-medium">{error}</p>
           <Button variant="outline" size="sm" onClick={fetchTickets}>
             Try Again
           </Button>
@@ -118,10 +118,10 @@ export const StaffQueuePage: React.FC = () => {
           />
         </Card>
       ) : (
-        <div className="bg-slate-900/80 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+        <div className="bg-[#111827] border border-slate-800 rounded-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-slate-300">
-              <thead className="bg-slate-950/80 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-800">
+              <thead className="bg-[#161f30] text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800 font-semibold">
                 <tr>
                   <th className="px-6 py-4 font-semibold">Ticket ID</th>
                   <th className="px-6 py-4 font-semibold">Category</th>

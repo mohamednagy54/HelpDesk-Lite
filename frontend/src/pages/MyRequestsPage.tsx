@@ -49,26 +49,27 @@ export const MyRequestsPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">My Requests</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <h1 className="text-xl font-semibold text-slate-100 tracking-tight">My Requests</h1>
+          <p className="text-xs text-slate-400 mt-0.5">
             Track and manage your submitted support tickets
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <Button
             variant="outline"
+            size="sm"
             onClick={fetchTickets}
             disabled={isLoading}
-            className="border-slate-700 text-slate-300 hover:bg-slate-800 text-xs py-2"
+            className="text-xs"
           >
             <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
           <Link to="/new-ticket">
-            <Button className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs py-2 px-4 shadow-sm flex items-center gap-1.5">
-              <Plus className="w-4 h-4" />
+            <Button size="sm" className="text-xs flex items-center gap-1.5">
+              <Plus className="w-3.5 h-3.5" />
               <span>New Ticket</span>
             </Button>
           </Link>
@@ -80,13 +81,13 @@ export const MyRequestsPage: React.FC = () => {
         <LoadingState message="Loading your requests..." />
       ) : error ? (
         <Card className="text-center py-12 space-y-4">
-          <p className="text-sm text-red-400 font-medium">{error}</p>
-          <Button onClick={fetchTickets} variant="outline" className="text-xs">
+          <p className="text-xs text-red-400 font-medium">{error}</p>
+          <Button onClick={fetchTickets} variant="outline" size="sm" className="text-xs">
             Try Again
           </Button>
         </Card>
       ) : tickets.length === 0 ? (
-        <Card className="py-16">
+        <Card className="py-12">
           <EmptyState
             title="You haven't submitted any requests yet"
             description="When you need help with access, software, or hardware, submit a ticket and track its status here."
@@ -97,14 +98,14 @@ export const MyRequestsPage: React.FC = () => {
       ) : (
         <div className="space-y-4">
           {/* Controls Bar */}
-          <div className="flex items-center justify-between bg-slate-900/60 p-3 rounded-lg border border-slate-800/80">
+          <div className="flex items-center justify-between bg-[#111827] p-3 rounded-md border border-slate-800">
             <div className="flex items-center gap-2 text-xs text-slate-400">
               <Filter className="w-3.5 h-3.5 text-slate-500" />
               <span>Filter by Status:</span>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="bg-slate-900 border border-slate-800 rounded-md px-2.5 py-1 text-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500"
               >
                 <option value="all">All Statuses ({tickets.length})</option>
                 <option value="New">New</option>
@@ -123,13 +124,13 @@ export const MyRequestsPage: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-800 bg-slate-900/90 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    <th className="py-3.5 px-4 w-28">Ticket ID</th>
-                    <th className="py-3.5 px-4 w-32">Category</th>
-                    <th className="py-3.5 px-4">Short Description</th>
-                    <th className="py-3.5 px-4 w-32">Status</th>
-                    <th className="py-3.5 px-4 w-36">Submitted</th>
-                    <th className="py-3.5 px-4 w-28 text-right">Action</th>
+                  <tr className="border-b border-slate-800 bg-[#161f30] text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                    <th className="py-3 px-4 w-28">Ticket ID</th>
+                    <th className="py-3 px-4 w-32">Category</th>
+                    <th className="py-3 px-4">Description</th>
+                    <th className="py-3 px-4 w-32">Status</th>
+                    <th className="py-3 px-4 w-36">Submitted</th>
+                    <th className="py-3 px-4 w-28 text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60 text-slate-300">
