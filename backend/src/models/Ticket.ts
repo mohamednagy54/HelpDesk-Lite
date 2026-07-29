@@ -22,6 +22,7 @@ const ticketSchema = new Schema<ITicket>(
     description: {
       type: String,
       required: true,
+      minlength: [10, 'Description must be at least 10 characters long'],
     },
     category: {
       type: String,

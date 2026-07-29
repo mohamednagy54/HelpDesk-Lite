@@ -1,11 +1,11 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { MainLayout } from '../layouts/MainLayout';
-import { ProtectedRoute } from './ProtectedRoute';
+import { ProtectedRoute } from '@/routes/ProtectedRoute';
 import { ErrorPage } from '@/pages/ErrorPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
-import { LoginPage } from '@/features/auth/pages/LoginPage';
-import { DashboardPage } from '@/features/dashboard/pages/DashboardPage';
+import Login from '@/pages/Login';
+import Register from '@/pages/Register';
 import MyRequestsPage from '@/pages/MyRequestsPage';
 import NewTicketPage from '@/pages/NewTicketPage';
 import TicketDetailsPage from '@/pages/TicketDetailsPage';
@@ -27,7 +27,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: 'login',
-        element: <LoginPage />,
+        element: <Login />,
+      },
+      {
+        path: 'register',
+        element: <Register />,
       },
       {
         path: '/',
@@ -38,16 +42,20 @@ const router = createBrowserRouter([
             element: <RootRedirect />,
           },
           {
-            path: 'dashboard',
-            element: <DashboardPage />,
-          },
-          {
             path: 'my-requests',
-            element: <MyRequestsPage />,
+            element: (
+              <ProtectedRoute allowedRoles={['requester', 'staff']}>
+                <MyRequestsPage />
+              </ProtectedRoute>
+            ),
           },
           {
             path: 'new-ticket',
-            element: <NewTicketPage />,
+            element: (
+              <ProtectedRoute allowedRoles={['requester']}>
+                <NewTicketPage />
+              </ProtectedRoute>
+            ),
           },
           {
             path: 'tickets/:id',
@@ -56,23 +64,27 @@ const router = createBrowserRouter([
           {
             path: 'staff/tickets',
             element: (
-              <div className="p-8 text-slate-100 max-w-4xl mx-auto">
-                <h1 className="text-2xl font-bold mb-4">Staff Queue</h1>
-                <p className="text-sm text-slate-400">
-                  Select any ticket to view details and process status updates.
-                </p>
-              </div>
+              <ProtectedRoute allowedRoles={['staff']}>
+                <div className="p-8 text-slate-100 max-w-4xl mx-auto">
+                  <h1 className="text-2xl font-bold mb-4">Staff Queue</h1>
+                  <p className="text-sm text-slate-400">
+                    Select any ticket to view details and process status updates.
+                  </p>
+                </div>
+              </ProtectedRoute>
             ),
           },
           {
             path: 'manager/queue',
             element: (
-              <div className="p-8 text-slate-100 max-w-4xl mx-auto">
-                <h1 className="text-2xl font-bold mb-4">Manager Ticket Queue</h1>
-                <p className="text-sm text-slate-400">
-                  Select any ticket to view details, assign staff, or close tickets.
-                </p>
-              </div>
+              <ProtectedRoute allowedRoles={['manager']}>
+                <div className="p-8 text-slate-100 max-w-4xl mx-auto">
+                  <h1 className="text-2xl font-bold mb-4">Manager Ticket Queue</h1>
+                  <p className="text-sm text-slate-400">
+                    Select any ticket to view details, assign staff, or close tickets.
+                  </p>
+                </div>
+              </ProtectedRoute>
             ),
           },
         ],

@@ -6,6 +6,6 @@ export const errorHandler: ErrorRequestHandler = (err: any, req: Request, res: R
   res.status(statusCode).json({
     success: false,
     message: err.message || 'Internal Server Error',
-    data: null,
+    errors: process.env.NODE_ENV === 'production' ? [] : [{ message: err.message, stack: err.stack }],
   });
 };

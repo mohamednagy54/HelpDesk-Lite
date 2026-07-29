@@ -3,7 +3,7 @@ export interface User {
   name: string;
   email: string;
   role: 'requester' | 'staff' | 'manager';
-  token: string;
+  accessToken?: string;
 }
 
 export interface AuthResponse {
