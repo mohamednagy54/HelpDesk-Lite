@@ -1,33 +1,22 @@
 import React from 'react';
-import { Card, CardContent } from './Card';
-import { BadgeProps } from './Badge';
 import { cn } from '@/lib/utils';
+import { STATUS_STYLES } from './Badge';
+import type { TicketStatus } from '@/types/ticket';
 
 interface StatusSummaryCardProps {
   title: string;
   count: number;
-  variant?: BadgeProps["variant"];
+  status: TicketStatus;
   className?: string;
 }
 
-export const StatusSummaryCard: React.FC<StatusSummaryCardProps> = ({ title, count, variant = "default", className }) => {
-  const variantStyles = {
-    default: "text-primary",
-    secondary: "text-secondary-foreground",
-    destructive: "text-destructive",
-    outline: "text-foreground",
-    success: "text-green-700",
-    warning: "text-yellow-700",
-  };
+export const StatusSummaryCard: React.FC<StatusSummaryCardProps> = ({ title, count, status, className }) => {
+  const { text, bg } = STATUS_STYLES[status];
 
   return (
-    <Card className={cn("overflow-hidden", className)}>
-      <CardContent className="p-6">
-        <div className="flex flex-col gap-1">
-          <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <p className={cn("text-3xl font-bold", variantStyles[variant])}>{count}</p>
-        </div>
-      </CardContent>
-    </Card>
+    <div className={cn('rounded-xl border p-5 flex flex-col gap-2', bg, className)}>
+      <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">{title}</p>
+      <p className={cn('text-4xl font-bold tabular-nums', text)}>{count}</p>
+    </div>
   );
 };

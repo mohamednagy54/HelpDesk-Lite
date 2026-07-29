@@ -1,12 +1,17 @@
-export type TicketStatusType = 'New' | 'In Progress' | 'Resolved' | 'Closed';
+export type TicketStatus = 'New' | 'In Progress' | 'Resolved' | 'Closed';
+// Keep legacy alias for any files still using the old name
+export type TicketStatusType = TicketStatus;
 
 export interface Ticket {
-  id: string;
-  requesterName: string;
+  _id: string;
+  id?: string; // some API shapes may include this
+  description: string;
   category: string;
-  status: TicketStatusType;
-  ownerName: string | null;
+  status: TicketStatus;
+  requester: { _id: string; name: string; email: string } | string;
+  owner: { _id: string; name: string; email: string } | string | null;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface TicketSummary {

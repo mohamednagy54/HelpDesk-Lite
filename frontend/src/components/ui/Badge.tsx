@@ -1,28 +1,46 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import React from 'react';
+import { cn } from '@/lib/utils';
+import type { TicketStatus } from '@/types/ticket';
 
-export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "secondary" | "destructive" | "outline" | "success" | "warning"
+// Single source of truth for status colors — used by Badge AND StatusSummaryCard
+export const STATUS_STYLES: Record<TicketStatus, { badge: string; text: string; bg: string }> = {
+  'New':         { badge: 'bg-sky-950/50 text-sky-400 border-sky-500/30',     text: 'text-sky-400',     bg: 'bg-sky-950/50 border-sky-500/30' },
+  'In Progress': { badge: 'bg-amber-950/50 text-amber-400 border-amber-500/30', text: 'text-amber-400', bg: 'bg-amber-950/50 border-amber-500/30' },
+  'Resolved':    { badge: 'bg-emerald-950/50 text-emerald-400 border-emerald-500/30', text: 'text-emerald-400', bg: 'bg-emerald-950/50 border-emerald-500/30' },
+  'Closed':      { badge: 'bg-slate-900 text-slate-400 border-slate-700/60',   text: 'text-slate-400',   bg: 'bg-slate-900 border-slate-700/60' },
+};
+
+const ROLE_STYLES: Record<string, string> = {
+  manager:    'bg-purple-950/50 text-purple-400 border-purple-500/30',
+  staff:      'bg-indigo-950/50 text-indigo-400 border-indigo-500/30',
+  requester:  'bg-slate-800 text-slate-300 border-slate-700',
+};
+
+interface BadgeProps {
+  status?: TicketStatus | string;
+  role?: string;
+  className?: string;
+  children?: React.ReactNode;
 }
 
-function Badge({ className, variant = "default", ...props }: BadgeProps) {
+export const Badge: React.FC<BadgeProps> = ({ status, role, className, children }) => {
+  let styles = 'bg-slate-800 text-slate-300 border-slate-700';
+
+  if (status && Object.prototype.hasOwnProperty.call(STATUS_STYLES, status)) {
+    styles = STATUS_STYLES[status as TicketStatus].badge;
+  } else if (role && ROLE_STYLES[role]) {
+    styles = ROLE_STYLES[role];
+  }
+
   return (
-    <div
+    <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-        {
-          "border-transparent bg-primary text-primary-foreground hover:bg-primary/80": variant === "default",
-          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80": variant === "secondary",
-          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80": variant === "destructive",
-          "text-foreground": variant === "outline",
-          "border-transparent bg-green-500/15 text-green-700 hover:bg-green-500/25": variant === "success",
-          "border-transparent bg-yellow-500/15 text-yellow-700 hover:bg-yellow-500/25": variant === "warning",
-        },
+        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border transition-colors',
+        styles,
         className
       )}
-      {...props}
-    />
-  )
-}
-
-export { Badge }
+    >
+      {children || status || role}
+    </span>
+  );
+};

@@ -1,11 +1,44 @@
 import React from 'react';
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { MainLayout } from '../layouts/MainLayout';
-import { ProtectedRoute } from './ProtectedRoute';
 import { ErrorPage } from '@/pages/ErrorPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
-import { LoginPage } from '@/features/auth/pages/LoginPage';
-import { DashboardPage } from '@/features/dashboard/pages/DashboardPage';
+import { useAuthStore } from '@/features/auth/store/auth.store';
+import Login from '@/pages/Login';
+import Register from '@/pages/Register';
+import MyRequestsPage from '@/pages/MyRequestsPage';
+import NewTicketPage from '@/pages/NewTicketPage';
+import TicketDetailsPage from '@/pages/TicketDetailsPage';
+import { StaffTickets } from '@/pages/StaffTickets';
+import { ManagerQueue } from '@/pages/ManagerQueue';
+
+// --- Root redirect based on role ---
+const RootRedirect = () => {
+  const user = useAuthStore((state) => state.user);
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role === 'staff') return <Navigate to="/staff/tickets" replace />;
+  if (user.role === 'manager') return <Navigate to="/manager/queue" replace />;
+  return <Navigate to="/my-requests" replace />;
+};
+
+// --- Auth guard — redirects unauthenticated users to login ---
+const RequireAuth = () => {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const location = useLocation();
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+  return <Outlet />;
+};
+
+// --- Role guard — redirects to root if role not allowed ---
+const RequireRole = ({ allowedRoles }: { allowedRoles: string[] }) => {
+  const user = useAuthStore((state) => state.user);
+  if (!user || !allowedRoles.includes(user.role)) {
+    return <Navigate to="/" replace />;
+  }
+  return <Outlet />;
+};
 
 const router = createBrowserRouter([
   {
@@ -13,32 +46,54 @@ const router = createBrowserRouter([
     element: <MainLayout />,
     errorElement: <ErrorPage />,
     children: [
+      { path: 'login',    element: <Login /> },
+      { path: 'register', element: <Register /> },
       {
-        path: 'login',
-        element: <LoginPage />,
-      },
-      {
-        path: '/',
-        element: <ProtectedRoute />,
+        element: <RequireAuth />,
         children: [
+          { index: true, element: <RootRedirect /> },
+
+          // Requester + staff can see their own requests
           {
-            index: true,
-            element: <Navigate to="/dashboard" replace />,
+            element: <RequireRole allowedRoles={['requester', 'staff', 'manager']} />,
+            children: [
+              { path: 'my-requests', element: <MyRequestsPage /> },
+              { path: 'tickets/:id', element: <TicketDetailsPage /> },
+            ],
           },
+
+          // Only requesters can open new tickets
           {
-            path: 'dashboard',
-            element: <DashboardPage />,
+            element: <RequireRole allowedRoles={['requester']} />,
+            children: [
+              { path: 'new-ticket', element: <NewTicketPage /> },
+            ],
+          },
+
+          // Staff queue
+          {
+            element: <RequireRole allowedRoles={['staff', 'manager']} />,
+            children: [
+              { path: 'staff/tickets', element: <StaffTickets /> },
+            ],
+          },
+
+          // Manager queue
+          {
+            element: <RequireRole allowedRoles={['manager']} />,
+            children: [
+              { path: 'manager/queue', element: <ManagerQueue /> },
+            ],
           },
         ],
       },
-      {
-        path: '*',
-        element: <NotFoundPage />,
-      },
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ]);
 
 export const AppRouter = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <RouterProvider router={router} future={{ v7_startTransition: true }} />
+  );
 };
