@@ -21,7 +21,7 @@ const RootRedirect = () => {
   return <Navigate to="/my-requests" replace />;
 };
 
-// --- Auth guard — redirects unauthenticated users to login ---
+// --- Auth guard ---
 const RequireAuth = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const location = useLocation();
@@ -31,7 +31,7 @@ const RequireAuth = () => {
   return <Outlet />;
 };
 
-// --- Role guard — redirects to root if role not allowed ---
+// --- Role guard ---
 const RequireRole = ({ allowedRoles }: { allowedRoles: string[] }) => {
   const user = useAuthStore((state) => state.user);
   if (!user || !allowedRoles.includes(user.role)) {
@@ -53,24 +53,15 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <RootRedirect /> },
 
-          // Requester + staff + manager can see their own requests & details
           {
             element: <RequireRole allowedRoles={['requester', 'staff', 'manager']} />,
             children: [
               { path: 'my-requests', element: <MyRequestsPage /> },
               { path: 'tickets/:id', element: <TicketDetailsPage /> },
+              { path: 'new-ticket',  element: <NewTicketPage /> },
             ],
           },
 
-          // Requesters & Staff can open new tickets
-          {
-            element: <RequireRole allowedRoles={['requester', 'staff', 'manager']} />,
-            children: [
-              { path: 'new-ticket', element: <NewTicketPage /> },
-            ],
-          },
-
-          // Staff queue
           {
             element: <RequireRole allowedRoles={['staff', 'manager']} />,
             children: [
@@ -78,7 +69,6 @@ const router = createBrowserRouter([
             ],
           },
 
-          // Manager queue
           {
             element: <RequireRole allowedRoles={['manager']} />,
             children: [

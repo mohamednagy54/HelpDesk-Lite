@@ -12,15 +12,11 @@ const getRefreshSecret = (): string => {
 };
 
 const generateAccessToken = (id: string | object, role: UserRole): string => {
-  return jwt.sign({ id, role }, getJwtSecret(), {
-    expiresIn: '7d',
-  });
+  return jwt.sign({ id, role }, getJwtSecret(), { expiresIn: '7d' });
 };
 
 const generateRefreshToken = (id: string | object, role: UserRole): string => {
-  return jwt.sign({ id, role }, getRefreshSecret(), {
-    expiresIn: '7d',
-  });
+  return jwt.sign({ id, role }, getRefreshSecret(), { expiresIn: '7d' });
 };
 
 const sendTokenResponse = (user: any, statusCode: number, res: Response, message: string) => {
@@ -46,7 +42,7 @@ const sendTokenResponse = (user: any, statusCode: number, res: Response, message
         name: user.name,
         email: user.email,
         role: user.role,
-        accessToken, // Also send in body for in-memory store
+        accessToken, // Also sent in body for in-memory auth store
       },
     });
 };

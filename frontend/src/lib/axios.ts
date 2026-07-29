@@ -9,7 +9,7 @@ export const api = axios.create({
   withCredentials: true, // Send & receive HTTP-only cookies
 });
 
-// Request interceptor: attach in-memory accessToken if present (speeds up auth check)
+// Request interceptor: attach in-memory accessToken if present
 api.interceptors.request.use(
   (config) => {
     const user = useAuthStore.getState().user;
@@ -21,7 +21,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor: on 401 attempt silent refresh via cookie, then retry
+// Response interceptor: silent refresh via cookie on 401
 let isRefreshing = false;
 let failedQueue: { resolve: (val: any) => void; reject: (err: any) => void }[] = [];
 

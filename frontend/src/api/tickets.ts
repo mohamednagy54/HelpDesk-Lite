@@ -2,6 +2,12 @@ import { api } from '@/lib/axios';
 import type { Ticket, TicketSummary } from '@/types/ticket';
 import type { ApiResponse } from '@/types';
 
+/**
+ * Get all tickets (staff/manager) — optionally filtered.
+ * status = 'All' or undefined → all tickets
+ * status = 'open'             → tickets not Closed (?open=true)
+ * status = 'New' | etc.       → filter by that status
+ */
 export const getAllTickets = async (status?: string): Promise<Ticket[]> => {
   let params: Record<string, string> = {};
 

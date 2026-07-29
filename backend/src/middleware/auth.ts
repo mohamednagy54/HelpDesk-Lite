@@ -18,7 +18,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
   } else if (req.cookies?.refreshToken) {
     token = req.cookies.refreshToken;
   } else if (req.headers.authorization?.startsWith('Bearer')) {
-    // 2. Fallback to Authorization header (for API clients / mobile)
+    // 2. Fallback to Authorization header
     token = req.headers.authorization.split(' ')[1];
   }
 
