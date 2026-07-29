@@ -1,34 +1,33 @@
-export type TicketCategory = 'Hardware' | 'Software' | 'Access' | 'Other';
-
 export type TicketStatus = 'New' | 'In Progress' | 'Resolved' | 'Closed';
 
-export interface TicketUser {
-  _id?: string;
-  id?: string;
+export type TicketCategory = 'Access' | 'Software' | 'Hardware' | 'Other';
+
+export interface UserRef {
+  _id: string;
   name: string;
   email: string;
 }
 
 export interface Ticket {
-  _id?: string;
-  id: string;
+  _id: string;
   category: TicketCategory;
   description: string;
   status: TicketStatus;
-  requester?: TicketUser | string;
-  owner?: TicketUser | null;
-  created_at?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  requester: UserRef;
+  owner?: UserRef | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface CreateTicketPayload {
+export interface CreateTicketInput {
   category: TicketCategory;
   description: string;
 }
 
-export interface TicketApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
+export interface UpdateStatusInput {
+  status: TicketStatus;
+}
+
+export interface AssignOwnerInput {
+  ownerId: string;
 }
