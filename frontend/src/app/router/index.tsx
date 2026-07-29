@@ -6,6 +6,18 @@ import { ErrorPage } from '@/pages/ErrorPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
+import MyRequestsPage from '@/pages/MyRequestsPage';
+import NewTicketPage from '@/pages/NewTicketPage';
+import TicketDetailsPage from '@/pages/TicketDetailsPage';
+import { useAuthStore } from '@/features/auth/store/auth.store';
+
+const RootRedirect = () => {
+  const user = useAuthStore((state) => state.user);
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role === 'staff') return <Navigate to="/staff/tickets" replace />;
+  if (user.role === 'manager') return <Navigate to="/manager/queue" replace />;
+  return <Navigate to="/my-requests" replace />;
+};
 
 const router = createBrowserRouter([
   {
@@ -27,21 +39,38 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Navigate to="/my-requests" replace />,
+            element: <RootRedirect />,
           },
           {
             path: 'my-requests',
             element: (
               <ProtectedRoute allowedRoles={['requester', 'staff']}>
-                <div className="p-8 text-slate-100">My Requests Page</div>
+                <MyRequestsPage />
               </ProtectedRoute>
             ),
+          },
+          {
+            path: 'new-ticket',
+            element: (
+              <ProtectedRoute allowedRoles={['requester']}>
+                <NewTicketPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'tickets/:id',
+            element: <TicketDetailsPage />,
           },
           {
             path: 'staff/tickets',
             element: (
               <ProtectedRoute allowedRoles={['staff']}>
-                <div className="p-8 text-slate-100">Staff Queue Page</div>
+                <div className="p-8 text-slate-100 max-w-4xl mx-auto">
+                  <h1 className="text-2xl font-bold mb-4">Staff Queue</h1>
+                  <p className="text-sm text-slate-400">
+                    Select any ticket to view details and process status updates.
+                  </p>
+                </div>
               </ProtectedRoute>
             ),
           },
@@ -49,7 +78,12 @@ const router = createBrowserRouter([
             path: 'manager/queue',
             element: (
               <ProtectedRoute allowedRoles={['manager']}>
-                <div className="p-8 text-slate-100">Manager Queue Page</div>
+                <div className="p-8 text-slate-100 max-w-4xl mx-auto">
+                  <h1 className="text-2xl font-bold mb-4">Manager Ticket Queue</h1>
+                  <p className="text-sm text-slate-400">
+                    Select any ticket to view details, assign staff, or close tickets.
+                  </p>
+                </div>
               </ProtectedRoute>
             ),
           },
@@ -64,5 +98,10 @@ const router = createBrowserRouter([
 ]);
 
 export const AppRouter = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <RouterProvider
+      router={router}
+      future={{ v7_startTransition: true }}
+    />
+  );
 };
