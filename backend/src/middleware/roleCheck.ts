@@ -7,7 +7,7 @@ export const roleCheck = (...roles: UserRole[]) => {
       return res.status(403).json({
         success: false,
         message: 'Not authorized for this role',
-        data: null,
+        errors: [],
       });
     }
     next();

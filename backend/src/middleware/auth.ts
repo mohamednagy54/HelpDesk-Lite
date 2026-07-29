@@ -17,14 +17,14 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
 
       const user = await User.findById(decoded.id).select('-password');
       if (!user) {
-        return res.status(401).json({ success: false, message: 'Not authorized, user not found', data: null });
+        return res.status(401).json({ success: false, message: 'Not authorized, user not found', errors: [] });
       }
       req.user = user;
       next();
     } catch (error) {
-      res.status(401).json({ success: false, message: 'Not authorized, token failed', data: null });
+      res.status(401).json({ success: false, message: 'Not authorized, token failed', errors: [] });
     }
   } else {
-    res.status(401).json({ success: false, message: 'Not authorized, no token', data: null });
+    res.status(401).json({ success: false, message: 'Not authorized, no token', errors: [] });
   }
 };
