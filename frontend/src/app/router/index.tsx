@@ -1,11 +1,11 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { MainLayout } from '../layouts/MainLayout';
-import { ProtectedRoute } from './ProtectedRoute';
+import { ProtectedRoute } from '@/routes/ProtectedRoute';
 import { ErrorPage } from '@/pages/ErrorPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
-import { LoginPage } from '@/features/auth/pages/LoginPage';
-import { DashboardPage } from '@/features/dashboard/pages/DashboardPage';
+import Login from '@/pages/Login';
+import Register from '@/pages/Register';
 
 const router = createBrowserRouter([
   {
@@ -15,7 +15,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: 'login',
-        element: <LoginPage />,
+        element: <Login />,
+      },
+      {
+        path: 'register',
+        element: <Register />,
       },
       {
         path: '/',
@@ -23,11 +27,31 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Navigate to="/dashboard" replace />,
+            element: <Navigate to="/my-requests" replace />,
           },
           {
-            path: 'dashboard',
-            element: <DashboardPage />,
+            path: 'my-requests',
+            element: (
+              <ProtectedRoute allowedRoles={['requester', 'staff']}>
+                <div className="p-8 text-slate-100">My Requests Page</div>
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'staff/tickets',
+            element: (
+              <ProtectedRoute allowedRoles={['staff']}>
+                <div className="p-8 text-slate-100">Staff Queue Page</div>
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'manager/queue',
+            element: (
+              <ProtectedRoute allowedRoles={['manager']}>
+                <div className="p-8 text-slate-100">Manager Queue Page</div>
+              </ProtectedRoute>
+            ),
           },
         ],
       },
