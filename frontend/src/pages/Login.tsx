@@ -12,10 +12,32 @@ import { PasswordInput } from '../components/auth/PasswordInput';
 import { FormError } from '../components/auth/FormError';
 
 export const Login: React.FC = () => {
-  const setUser = useAuthStore(state => state.setUser);
+  const { user, isAuthenticated, setUser } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [serverError, setServerError] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (isAuthenticated && user) {
+      const from = (location.state as { from?: { pathname?: string } })?.from?.pathname;
+      if (from && from !== '/login') {
+        navigate(from, { replace: true });
+        return;
+      }
+      switch (user.role) {
+        case 'staff':
+          navigate('/staff/tickets', { replace: true });
+          break;
+        case 'manager':
+          navigate('/manager/queue', { replace: true });
+          break;
+        case 'requester':
+        default:
+          navigate('/my-requests', { replace: true });
+          break;
+      }
+    }
+  }, [isAuthenticated, user, navigate, location]);
 
   const {
     register,

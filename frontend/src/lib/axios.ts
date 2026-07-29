@@ -8,13 +8,12 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Crucial for sending/receiving HTTP-only cookies
+  withCredentials: true, // Enables sending and receiving HTTP-only cookies
 });
 
-// Request Interceptor: Attach in-memory Access Token
+// Request Interceptor: Attach token from auth store if present
 api.interceptors.request.use(
   (config) => {
-    // Get token from Zustand store directly
     const user = useAuthStore.getState().user;
     if (user?.accessToken) {
       config.headers.Authorization = `Bearer ${user.accessToken}`;
@@ -26,7 +25,6 @@ api.interceptors.request.use(
   }
 );
 
-// To prevent infinite refresh loops
 let isRefreshing = false;
 let failedQueue: any[] = [];
 
@@ -41,15 +39,12 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
-// Response Interceptor: Handle 401 & Silent Refresh
+// Response Interceptor: Silent refresh using HTTP-only cookie on 401
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // Prevent loop if the refresh itself fails, or login fails
     if (
       error.response?.status === 401 &&
       originalRequest &&
@@ -58,41 +53,35 @@ api.interceptors.response.use(
       !originalRequest.url?.includes('/auth/login')
     ) {
       if (isRefreshing) {
-        // If already refreshing, wait for it to finish then retry
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
           .then((token) => {
-            originalRequest.headers.Authorization = 'Bearer ' + token;
+            originalRequest.headers.Authorization = `Bearer ${token}`;
             return api(originalRequest);
           })
-          .catch((err) => {
-            return Promise.reject(err);
-          });
+          .catch((err) => Promise.reject(err));
       }
 
       originalRequest._retry = true;
       isRefreshing = true;
 
       try {
-        // Attempt to get a new access token via refresh token cookie
         const { data } = await axios.post(
           `${BASE_URL}/auth/refresh`,
           {},
           { withCredentials: true }
         );
 
-        // Update Zustand store with new user data/token
-        useAuthStore.getState().setUser(data.data);
-
-        // Process queued requests with the new token
-        processQueue(null, data.data.accessToken);
-        
-        // Retry original request
-        originalRequest.headers.Authorization = `Bearer ${data.data.accessToken}`;
-        return api(originalRequest);
+        if (data?.success && data?.data) {
+          useAuthStore.getState().setUser(data.data);
+          processQueue(null, data.data.accessToken);
+          originalRequest.headers.Authorization = `Bearer ${data.data.accessToken}`;
+          return api(originalRequest);
+        } else {
+          throw new Error('Refresh failed');
+        }
       } catch (refreshError) {
-        // Refresh token failed (e.g. expired or missing)
         processQueue(refreshError, null);
         useAuthStore.getState().logout();
         return Promise.reject(refreshError);

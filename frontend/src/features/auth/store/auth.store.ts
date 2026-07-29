@@ -11,6 +11,8 @@ interface AuthState {
   logout: () => Promise<void>;
 }
 
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
@@ -19,10 +21,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   setInitializing: (isInitializing) => set({ isInitializing }),
   logout: async () => {
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/logout`, {}, { withCredentials: true });
+      await axios.post(`${BASE_URL}/auth/logout`, {}, { withCredentials: true });
     } catch (e) {
       // Ignore errors on logout
     }
-    set({ user: null, isAuthenticated: false });
+    set({ user: null, isAuthenticated: false, isInitializing: false });
   },
 }));

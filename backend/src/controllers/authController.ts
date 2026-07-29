@@ -3,17 +3,23 @@ import jwt, { Secret } from 'jsonwebtoken';
 import User from '../models/User';
 import { UserRole } from '../types';
 
+const getJwtSecret = (): string => {
+  return process.env.JWT_SECRET || 'helpdesk_lite_secret_key_2026_super_secure';
+};
+
+const getRefreshSecret = (): string => {
+  return process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET || 'helpdesk_lite_secret_key_2026_super_secure';
+};
+
 const generateAccessToken = (id: string | object, role: UserRole): string => {
-  const secret: Secret = process.env.JWT_SECRET || 'fallback_secret';
-  return jwt.sign({ id, role }, secret, {
-    expiresIn: '15m', // Short-lived access token
+  return jwt.sign({ id, role }, getJwtSecret(), {
+    expiresIn: '7d', // 7 days for development ease
   });
 };
 
 const generateRefreshToken = (id: string | object, role: UserRole): string => {
-  const secret: Secret = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET || 'fallback_refresh_secret';
-  return jwt.sign({ id, role }, secret, {
-    expiresIn: '7d', // Long-lived refresh token
+  return jwt.sign({ id, role }, getRefreshSecret(), {
+    expiresIn: '7d',
   });
 };
 
@@ -21,17 +27,17 @@ const sendTokenResponse = (user: any, statusCode: number, res: Response, message
   const accessToken = generateAccessToken(user._id, user.role);
   const refreshToken = generateRefreshToken(user._id, user.role);
 
-  // Set cookie options
-  const options = {
+  const cookieOptions = {
     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-    httpOnly: true, // Prevents XSS attacks
+    httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict' as const, // Prevents CSRF attacks
+    sameSite: (process.env.NODE_ENV === 'production' ? 'strict' : 'lax') as 'strict' | 'lax',
   };
 
   res
     .status(statusCode)
-    .cookie('refreshToken', refreshToken, options)
+    .cookie('accessToken', accessToken, cookieOptions)
+    .cookie('refreshToken', refreshToken, cookieOptions)
     .json({
       success: true,
       message,
@@ -40,7 +46,7 @@ const sendTokenResponse = (user: any, statusCode: number, res: Response, message
         name: user.name,
         email: user.email,
         role: user.role,
-        accessToken, // Send access token in JSON body
+        accessToken,
       },
     });
 };
@@ -103,64 +109,58 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
-// @desc    Refresh access token
+// @desc    Refresh access token / restore session via cookie
 // @route   POST /api/auth/refresh
 // @access  Public
 export const refresh = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    const token = req.cookies.refreshToken || req.cookies.accessToken;
 
-    if (!refreshToken) {
-      return res.status(401).json({ success: false, message: 'Not authorized, no refresh token', data: null });
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'Not authorized, no token cookie', data: null });
     }
 
-    const secret: Secret = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET || 'fallback_refresh_secret';
-    
     try {
-      const decoded = jwt.verify(refreshToken, secret) as any;
+      let decoded: any;
+      try {
+        decoded = jwt.verify(token, getRefreshSecret());
+      } catch (err) {
+        decoded = jwt.verify(token, getJwtSecret());
+      }
+
       const user = await User.findById(decoded.id).select('-password');
 
       if (!user) {
         return res.status(401).json({ success: false, message: 'Not authorized, user not found', data: null });
       }
 
-      const accessToken = generateAccessToken(user._id, user.role);
-
-      res.status(200).json({
-        success: true,
-        message: 'Token refreshed successfully',
-        data: {
-          accessToken,
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        }
-      });
+      sendTokenResponse(user, 200, res, 'Token refreshed successfully');
     } catch (error) {
-      res.status(401).json({ success: false, message: 'Not authorized, invalid refresh token', data: null });
+      res.status(401).json({ success: false, message: 'Not authorized, invalid token cookie', data: null });
     }
   } catch (error) {
     next(error);
   }
 };
 
-// @desc    Logout user / clear cookie
+// @desc    Logout user / clear cookies
 // @route   POST /api/auth/logout
 // @access  Public
 export const logout = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    res.cookie('refreshToken', 'none', {
-      expires: new Date(Date.now() + 10 * 1000), // expire in 10 seconds
+    const clearOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict' as const,
-    });
-    
+      sameSite: (process.env.NODE_ENV === 'production' ? 'strict' : 'lax') as 'strict' | 'lax',
+    };
+
+    res.clearCookie('accessToken', clearOptions);
+    res.clearCookie('refreshToken', clearOptions);
+
     res.status(200).json({
       success: true,
       message: 'User logged out successfully',
-      data: null
+      data: null,
     });
   } catch (error) {
     next(error);

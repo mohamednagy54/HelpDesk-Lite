@@ -27,6 +27,10 @@ export const MyRequestsPage: React.FC = () => {
         setError('Failed to fetch requests.');
       }
     } catch (err: any) {
+      if (err?.response?.status === 401) {
+        navigate('/login', { replace: true });
+        return;
+      }
       setError(err?.response?.data?.message || 'We couldn\'t load your requests. Please try again.');
     } finally {
       setIsLoading(false);

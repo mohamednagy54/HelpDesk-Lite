@@ -3,10 +3,16 @@ import axios from 'axios';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const { setUser, setInitializing, isInitializing } = useAuthStore();
+  const { user, setUser, setInitializing, isInitializing } = useAuthStore();
   const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   useEffect(() => {
+    // If user is already set in store (e.g. just logged in via form), don't do silent refresh
+    if (user) {
+      setInitializing(false);
+      return;
+    }
+
     const checkAuth = async () => {
       try {
         const { data } = await axios.post(
@@ -16,9 +22,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         );
         if (data?.success && data?.data) {
           setUser(data.data);
+        } else {
+          setUser(null);
         }
-      } catch (error) {
-        // Silent fail, user is just not logged in (no refresh token or expired)
+      } catch {
         setUser(null);
       } finally {
         setInitializing(false);
@@ -30,8 +37,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   if (isInitializing) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-gray-50">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      <div className="flex h-screen w-screen items-center justify-center bg-slate-950 text-indigo-400">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent"></div>
       </div>
     );
   }

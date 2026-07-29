@@ -17,6 +17,13 @@ export const ticketsApi = {
     return data;
   },
 
+  getAllTickets: async (status?: string): Promise<ApiResponse<Ticket[]>> => {
+    const { data } = await api.get<ApiResponse<Ticket[]>>('/tickets/all', {
+      params: status ? { status } : undefined,
+    });
+    return data;
+  },
+
   createTicket: async (payload: CreateTicketInput): Promise<ApiResponse<Ticket>> => {
     const { data } = await api.post<ApiResponse<Ticket>>('/tickets', payload);
     return data;

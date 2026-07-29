@@ -42,6 +42,10 @@ export const TicketDetailsPage: React.FC = () => {
         setErrorMsg('Ticket not found.');
       }
     } catch (err: any) {
+      if (err?.response?.status === 401) {
+        navigate('/login', { replace: true });
+        return;
+      }
       setErrorMsg(
         err?.response?.data?.message || 'We could not fetch ticket details. Please try again.'
       );

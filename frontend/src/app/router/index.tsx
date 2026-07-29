@@ -9,6 +9,8 @@ import Register from '@/pages/Register';
 import MyRequestsPage from '@/pages/MyRequestsPage';
 import NewTicketPage from '@/pages/NewTicketPage';
 import TicketDetailsPage from '@/pages/TicketDetailsPage';
+import { StaffQueuePage } from '@/pages/StaffQueuePage';
+import { ManagerQueuePage } from '@/pages/ManagerQueuePage';
 import { useAuthStore } from '@/features/auth/store/auth.store';
 
 const RootRedirect = () => {
@@ -44,7 +46,7 @@ const router = createBrowserRouter([
           {
             path: 'my-requests',
             element: (
-              <ProtectedRoute allowedRoles={['requester', 'staff']}>
+              <ProtectedRoute allowedRoles={['requester', 'staff', 'manager']}>
                 <MyRequestsPage />
               </ProtectedRoute>
             ),
@@ -52,7 +54,7 @@ const router = createBrowserRouter([
           {
             path: 'new-ticket',
             element: (
-              <ProtectedRoute allowedRoles={['requester']}>
+              <ProtectedRoute allowedRoles={['requester', 'staff', 'manager']}>
                 <NewTicketPage />
               </ProtectedRoute>
             ),
@@ -64,13 +66,8 @@ const router = createBrowserRouter([
           {
             path: 'staff/tickets',
             element: (
-              <ProtectedRoute allowedRoles={['staff']}>
-                <div className="p-8 text-slate-100 max-w-4xl mx-auto">
-                  <h1 className="text-2xl font-bold mb-4">Staff Queue</h1>
-                  <p className="text-sm text-slate-400">
-                    Select any ticket to view details and process status updates.
-                  </p>
-                </div>
+              <ProtectedRoute allowedRoles={['staff', 'manager']}>
+                <StaffQueuePage />
               </ProtectedRoute>
             ),
           },
@@ -78,12 +75,7 @@ const router = createBrowserRouter([
             path: 'manager/queue',
             element: (
               <ProtectedRoute allowedRoles={['manager']}>
-                <div className="p-8 text-slate-100 max-w-4xl mx-auto">
-                  <h1 className="text-2xl font-bold mb-4">Manager Ticket Queue</h1>
-                  <p className="text-sm text-slate-400">
-                    Select any ticket to view details, assign staff, or close tickets.
-                  </p>
-                </div>
+                <ManagerQueuePage />
               </ProtectedRoute>
             ),
           },

@@ -12,9 +12,26 @@ import { PasswordInput } from '../components/auth/PasswordInput';
 import { FormError } from '../components/auth/FormError';
 
 export const Register: React.FC = () => {
-  const setUser = useAuthStore(state => state.setUser);
+  const { user, isAuthenticated, setUser } = useAuthStore();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (isAuthenticated && user) {
+      switch (user.role) {
+        case 'staff':
+          navigate('/staff/tickets', { replace: true });
+          break;
+        case 'manager':
+          navigate('/manager/queue', { replace: true });
+          break;
+        case 'requester':
+        default:
+          navigate('/my-requests', { replace: true });
+          break;
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const {
     register,
